@@ -211,7 +211,23 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                         type="checkbox"
                         className="mt-0.5 accent-emerald-600"
                       />{" "}
-                      I agree to the Terms of Service and Privacy Policy.
+                      <span>
+                        I agree to the{" "}
+                        <Link
+                          href="/terms"
+                          className="font-medium text-emerald-700 hover:underline"
+                        >
+                          Terms of Service
+                        </Link>{" "}
+                        and{" "}
+                        <Link
+                          href="/privacy-policy"
+                          className="font-medium text-emerald-700 hover:underline"
+                        >
+                          Privacy Policy
+                        </Link>
+                        .
+                      </span>
                     </label>
                   )}
                   {isLogin && (
