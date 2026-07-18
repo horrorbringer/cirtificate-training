@@ -1,8 +1,5 @@
-import "@fontsource-variable/manrope";
+import "@fontsource-variable/inter";
 import "./globals.css";
-import { Geist } from "next/font/google";
-
-const geist = Geist({ subsets: ["latin"], variable: "--font-geist" });
 
 export const metadata = {
   title: "CertiLearn — Learn. Prove. Grow.",
@@ -11,7 +8,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={geist.variable}>
+    <html lang="en">
       <body>{children}</body>
     </html>
   );
