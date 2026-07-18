@@ -2,6 +2,7 @@
 
 import {
   Activity,
+  ArrowRight,
   ArrowDownRight,
   ArrowUpRight,
   Award,
@@ -500,6 +501,7 @@ export function AdminDashboard({
 }) {
   const [active, setActive] = useState("Overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [adminNotificationsRead, setAdminNotificationsRead] = useState(false);
   const [memberQuery, setMemberQuery] = useState("");
   const [planFilter, setPlanFilter] = useState("All plans");
   const [statusFilter, setStatusFilter] = useState("All statuses");
@@ -666,15 +668,121 @@ export function AdminDashboard({
             </Button>
             <AdminSearch onSelect={setActive} notify={notify} />
             <div className="ml-auto flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="icon"
-                className="relative"
-                onClick={() => notify("You have 5 admin notifications")}
-              >
-                <Bell />
-                <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-rose-500" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="relative"
+                    aria-label="Open admin notifications"
+                  >
+                    <Bell />
+                    {!adminNotificationsRead && (
+                      <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-rose-500" />
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-[380px] max-w-[calc(100vw-24px)] p-0"
+                >
+                  <div className="flex items-center justify-between px-4 py-3">
+                    <div>
+                      <DropdownMenuLabel className="p-0">
+                        Admin notifications
+                      </DropdownMenuLabel>
+                      <p className="text-xs text-slate-500">
+                        {adminNotificationsRead
+                          ? "No unread operational alerts"
+                          : "4 items need attention"}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setAdminNotificationsRead(true);
+                        notify("All admin notifications marked as read");
+                      }}
+                    >
+                      Mark all read
+                    </Button>
+                  </div>
+                  <DropdownMenuSeparator className="m-0" />
+                  <div className="p-1">
+                    {[
+                      [
+                        Award,
+                        "8 certificate requests pending",
+                        "The oldest request has been waiting for two days.",
+                        "Certificates",
+                        "12 min ago",
+                      ],
+                      [
+                        CreditCard,
+                        "Payment failed for Nadia Rahman",
+                        "Yearly membership entered its grace period.",
+                        "Payments",
+                        "34 min ago",
+                      ],
+                      [
+                        Users,
+                        "26 new members registered",
+                        "Review this week’s member growth and account status.",
+                        "Members",
+                        "2 hours ago",
+                      ],
+                      [
+                        Megaphone,
+                        "Maintenance notice is scheduled",
+                        "The announcement will publish on July 24 at 02:00.",
+                        "Announcements",
+                        "Yesterday",
+                      ],
+                    ].map(([Icon, title, description, target, time]) => {
+                      const AlertIcon = Icon as typeof Award;
+                      return (
+                        <DropdownMenuItem
+                          key={title as string}
+                          className="items-start gap-3 p-3"
+                          onClick={() => {
+                            setAdminNotificationsRead(true);
+                            setActive(target as string);
+                          }}
+                        >
+                          <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-emerald-50 text-emerald-700">
+                            <AlertIcon className="size-4" />
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between gap-2">
+                              <strong className="text-sm font-medium">
+                                {title as string}
+                              </strong>
+                              {!adminNotificationsRead && (
+                                <span className="size-2 shrink-0 rounded-full bg-rose-500" />
+                              )}
+                            </div>
+                            <p className="mt-1 whitespace-normal text-xs leading-5 text-slate-500">
+                              {description as string}
+                            </p>
+                            <small className="mt-1 block text-xs text-slate-400">
+                              {time as string}
+                            </small>
+                          </div>
+                        </DropdownMenuItem>
+                      );
+                    })}
+                  </div>
+                  <DropdownMenuSeparator className="m-0" />
+                  <Button
+                    variant="ghost"
+                    className="h-11 w-full rounded-none"
+                    onClick={() => notify("Admin notification history opened")}
+                  >
+                    View notification history <ArrowRight />
+                  </Button>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="gap-2">
