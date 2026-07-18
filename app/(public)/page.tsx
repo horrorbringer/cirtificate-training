@@ -528,6 +528,9 @@ export default function Home() {
               >
                 News
               </Link>
+              <Link className="text-[10px] text-[#6f7a8c]" href="/pricing">
+                Pricing
+              </Link>
               <Link
                 className="text-[10px] text-[#6f7a8c]"
                 href="/privacy-policy"
