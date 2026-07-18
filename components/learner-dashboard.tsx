@@ -83,7 +83,8 @@ type MemberSection =
   | "certificates"
   | "profile"
   | "membership"
-  | "billing";
+  | "billing"
+  | "notifications";
 
 export function LearnerDashboard({
   onBrowse,
@@ -218,7 +219,7 @@ export function LearnerDashboard({
               <Button
                 variant="ghost"
                 className="h-11 w-full rounded-none"
-                onClick={() => notify("Notification history opened")}
+                onClick={() => setSection("notifications")}
               >
                 View all notifications <ArrowRight />
               </Button>
@@ -578,8 +579,10 @@ export function LearnerDashboard({
             <MyProfile notify={notify} />
           ) : section === "membership" ? (
             <MyMembership notify={notify} />
-          ) : (
+          ) : section === "billing" ? (
             <MyBilling notify={notify} />
+          ) : (
+            <NotificationHistory onSelect={setSection} notify={notify} />
           )}
         </section>
       </div>
@@ -589,6 +592,209 @@ export function LearnerDashboard({
           {message}
         </div>
       )}
+    </div>
+  );
+}
+
+const notificationRecords = [
+  {
+    id: 1,
+    title: "Certificate approved",
+    description:
+      "Your Project Management Foundations credential is ready to download.",
+    category: "Certificates",
+    time: "8 minutes ago",
+    section: "certificates" as MemberSection,
+    icon: Award,
+    unread: true,
+  },
+  {
+    id: 2,
+    title: "Continue where you left off",
+    description: "You have 14 minutes remaining in Visualizing your data.",
+    category: "Learning",
+    time: "2 hours ago",
+    section: "continue" as MemberSection,
+    icon: CirclePlay,
+    unread: true,
+  },
+  {
+    id: 3,
+    title: "Membership renewal scheduled",
+    description: "Your Yearly Premium membership renews on February 18, 2027.",
+    category: "Billing",
+    time: "Yesterday",
+    section: "billing" as MemberSection,
+    icon: CreditCard,
+    unread: true,
+  },
+  {
+    id: 4,
+    title: "New resource available",
+    description:
+      "The Excel formulas quick-reference guide was added to your course.",
+    category: "Resources",
+    time: "July 18",
+    section: "resources" as MemberSection,
+    icon: FileText,
+    unread: false,
+  },
+  {
+    id: 5,
+    title: "Weekly learning goal reached",
+    description:
+      "You completed 5.2 hours of learning this week. Excellent work.",
+    category: "Learning",
+    time: "July 17",
+    section: "overview" as MemberSection,
+    icon: Award,
+    unread: false,
+  },
+  {
+    id: 6,
+    title: "Payment receipt available",
+    description: "Your Yearly Premium receipt is ready in Billing & payments.",
+    category: "Billing",
+    time: "February 18",
+    section: "billing" as MemberSection,
+    icon: ReceiptText,
+    unread: false,
+  },
+];
+
+function NotificationHistory({
+  onSelect,
+  notify,
+}: {
+  onSelect: (section: MemberSection) => void;
+  notify: (message: string) => void;
+}) {
+  const [filter, setFilter] = useState("All");
+  const [query, setQuery] = useState("");
+  const [readIds, setReadIds] = useState<number[]>(
+    notificationRecords.filter((item) => !item.unread).map((item) => item.id),
+  );
+  const rows = notificationRecords.filter(
+    (item) =>
+      (filter === "All" ||
+        item.category === filter ||
+        (filter === "Unread" && !readIds.includes(item.id))) &&
+      `${item.title} ${item.description}`
+        .toLowerCase()
+        .includes(query.toLowerCase()),
+  );
+  return (
+    <div className="space-y-6">
+      <div className="member-section-title">
+        <div>
+          <span>ACTIVITY CENTER</span>
+          <h1>Notifications</h1>
+          <p>Review learning, certificate, membership, and billing updates.</p>
+        </div>
+        <Button
+          variant="outline"
+          onClick={() => {
+            setReadIds(notificationRecords.map((item) => item.id));
+            notify("All notifications marked as read");
+          }}
+        >
+          <Check /> Mark all read
+        </Button>
+      </div>
+      <Card className="shadow-none">
+        <CardHeader className="gap-4">
+          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+            <div>
+              <CardTitle>Notification history</CardTitle>
+              <CardDescription>
+                {notificationRecords.length - readIds.length} unread updates
+              </CardDescription>
+            </div>
+            <div className="relative w-full sm:w-72">
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                className="pl-9"
+                placeholder="Search notifications"
+              />
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {[
+              "All",
+              "Unread",
+              "Learning",
+              "Certificates",
+              "Resources",
+              "Billing",
+            ].map((item) => (
+              <Button
+                key={item}
+                variant={filter === item ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilter(item)}
+              >
+                {item}
+                {item === "Unread" && (
+                  <Badge variant="secondary">
+                    {notificationRecords.length - readIds.length}
+                  </Badge>
+                )}
+              </Button>
+            ))}
+          </div>
+        </CardHeader>
+        <CardContent className="divide-y p-0">
+          {rows.map((item) => {
+            const NoticeIcon = item.icon;
+            const unread = !readIds.includes(item.id);
+            return (
+              <Button
+                key={item.id}
+                variant="ghost"
+                className={`h-auto w-full justify-start gap-4 rounded-none p-5 text-left ${unread ? "bg-emerald-50/30" : ""}`}
+                onClick={() => {
+                  setReadIds((current) => [...new Set([...current, item.id])]);
+                  onSelect(item.section);
+                  notify(`${item.title} opened`);
+                }}
+              >
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
+                  <NoticeIcon className="size-5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-2">
+                    <strong className="text-sm font-medium">
+                      {item.title}
+                    </strong>
+                    {unread && (
+                      <i className="size-2 rounded-full bg-emerald-500" />
+                    )}
+                  </span>
+                  <span className="mt-1 block whitespace-normal text-sm leading-6 text-slate-500">
+                    {item.description}
+                  </span>
+                  <span className="mt-2 flex items-center gap-2 text-xs text-slate-400">
+                    <Badge variant="secondary">{item.category}</Badge>
+                    {item.time}
+                  </span>
+                </span>
+                <ArrowRight className="mt-2 size-4 shrink-0 text-slate-400" />
+              </Button>
+            );
+          })}
+          {rows.length === 0 && (
+            <div className="py-16 text-center">
+              <Bell className="mx-auto size-6 text-slate-400" />
+              <p className="mt-2 text-sm font-medium">No notifications found</p>
+              <p className="mt-1 text-xs text-slate-500">
+                Try another filter or search phrase.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -800,8 +800,8 @@ export function AdminDashboard({
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Admin account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>Profile</DropdownMenuItem>
-                  <DropdownMenuItem>Security</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setActive("Admin Profile")}>Profile</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setActive("Admin Security")}>Security</DropdownMenuItem>
                   <DropdownMenuItem onClick={onExit}>
                     Return to website
                   </DropdownMenuItem>
@@ -1317,6 +1317,8 @@ export function AdminDashboard({
               <AdminReportsWorkspace notify={notify} />
             ) : active === "Settings" ? (
               <AdminSettingsWorkspace notify={notify} />
+            ) : active === "Admin Profile" || active === "Admin Security" ? (
+              <AdminAccountWorkspace initialTab={active === "Admin Security" ? "security" : "profile"} notify={notify} />
             ) : (
               <AdminModulePreview active={active} notify={notify} />
             )}
