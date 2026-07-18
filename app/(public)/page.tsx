@@ -220,6 +220,12 @@ export default function Home() {
           >
             Plans
           </button>
+          <Link
+            className="text-sm font-medium text-[#536078] hover:text-emerald-600"
+            href="/announcements"
+          >
+            Announcements
+          </Link>
           <button onClick={goVerify}>Verify certificate</button>
         </nav>
         <div className="header-actions">
@@ -515,6 +521,12 @@ export default function Home() {
               </Link>
               <Link className="text-[10px] text-[#6f7a8c]" href="/support">
                 Support
+              </Link>
+              <Link
+                className="text-[10px] text-[#6f7a8c]"
+                href="/announcements"
+              >
+                News
               </Link>
               <Link
                 className="text-[10px] text-[#6f7a8c]"
