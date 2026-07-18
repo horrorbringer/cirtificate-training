@@ -34,7 +34,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { CertificateVerification } from "@/components/certificate-verification";
 
-type Course = {
+export type Course = {
   title: string;
   category: string;
   level: string;
@@ -47,7 +47,7 @@ type Course = {
   icon: string;
 };
 
-const courses: Course[] = [
+export const courses: Course[] = [
   {
     title: "Project Management Foundations",
     category: "Leadership",
@@ -230,9 +230,6 @@ export default function Home() {
             <Bell size={19} />
             <i />
           </button>
-          <button className="admin-link" onClick={goAdmin}>
-            <ShieldCheck size={16} /> Admin
-          </button>
           <button className="login-link" onClick={goLogin}>
             Log in
           </button>
@@ -267,16 +264,9 @@ export default function Home() {
                 resources, and certificates trusted across borders.
               </p>
               <div className="hero-actions">
-                <button
-                  className="primary-btn"
-                  onClick={() =>
-                    document
-                      .querySelector("#courses")
-                      ?.scrollIntoView({ behavior: "smooth" })
-                  }
-                >
+                <Link className="primary-btn" href="/courses">
                   Explore courses <ArrowRight size={18} />
-                </button>
+                </Link>
                 <button
                   className="watch-btn"
                   onClick={() => showToast("Welcome video started")}
@@ -286,6 +276,17 @@ export default function Home() {
                   </span>{" "}
                   See how it works
                 </button>
+              </div>
+              <div className="hero-benefits" aria-label="Membership benefits">
+                <span>
+                  <Check size={14} /> Free courses available
+                </span>
+                <span>
+                  <Check size={14} /> Learn at your pace
+                </span>
+                <span>
+                  <Check size={14} /> Verifiable certificates
+                </span>
               </div>
               <div className="social-proof">
                 <div className="avatar-stack">
@@ -674,7 +675,7 @@ const lessonGroups = [
   },
 ];
 
-function CourseDetail({
+export function CourseDetail({
   course,
   onBack,
   showToast,

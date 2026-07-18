@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 
 const courses = [
   {
+    slug: "project-management-foundations",
     title: "Project Management Foundations",
     category: "Leadership",
     level: "Beginner",
@@ -35,6 +36,7 @@ const courses = [
     initials: "PM",
   },
   {
+    slug: "data-analysis-with-excel",
     title: "Data Analysis with Excel",
     category: "Business",
     level: "Intermediate",
@@ -47,6 +49,7 @@ const courses = [
     initials: "DA",
   },
   {
+    slug: "workplace-health-safety",
     title: "Workplace Health & Safety",
     category: "Compliance",
     level: "Beginner",
@@ -59,6 +62,7 @@ const courses = [
     initials: "HS",
   },
   {
+    slug: "digital-marketing-strategy",
     title: "Digital Marketing Strategy",
     category: "Marketing",
     level: "Advanced",
@@ -71,6 +75,7 @@ const courses = [
     initials: "DM",
   },
   {
+    slug: "effective-team-leadership",
     title: "Effective Team Leadership",
     category: "Leadership",
     level: "Intermediate",
@@ -83,6 +88,7 @@ const courses = [
     initials: "TL",
   },
   {
+    slug: "sustainable-development-goals",
     title: "Sustainable Development Goals",
     category: "Compliance",
     level: "Beginner",
@@ -95,6 +101,7 @@ const courses = [
     initials: "SD",
   },
   {
+    slug: "business-communication-essentials",
     title: "Business Communication Essentials",
     category: "Business",
     level: "Beginner",
@@ -107,6 +114,7 @@ const courses = [
     initials: "BC",
   },
   {
+    slug: "strategic-decision-making",
     title: "Strategic Decision Making",
     category: "Leadership",
     level: "Advanced",
@@ -119,6 +127,7 @@ const courses = [
     initials: "SM",
   },
   {
+    slug: "social-media-campaign-planning",
     title: "Social Media Campaign Planning",
     category: "Marketing",
     level: "Intermediate",
@@ -364,7 +373,7 @@ export function CoursesCatalog() {
                     size="sm"
                     className="text-emerald-700"
                   >
-                    <Link href="/#courses">
+                    <Link href={`/courses/${course.slug}`}>
                       View course <ArrowRight />
                     </Link>
                   </Button>
