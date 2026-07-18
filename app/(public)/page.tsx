@@ -137,6 +137,7 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [toast, setToast] = useState("");
+  const [yearlyBilling, setYearlyBilling] = useState(true);
 
   const filtered = useMemo(
     () =>
@@ -481,24 +482,34 @@ export default function Home() {
             <div className="price-card">
               <span className="popular">BEST VALUE</span>
               <div className="billing">
-                <button>Monthly</button>
-                <button className="active">
+                <button
+                  className={!yearlyBilling ? "active" : ""}
+                  onClick={() => setYearlyBilling(false)}
+                >
+                  Monthly
+                </button>
+                <button
+                  className={yearlyBilling ? "active" : ""}
+                  onClick={() => setYearlyBilling(true)}
+                >
                   Yearly <small>Save 35%</small>
                 </button>
               </div>
               <div className="price">
                 <sup>$</sup>
-                <strong>99</strong>
+                <strong>{yearlyBilling ? "149" : "19"}</strong>
                 <span>
-                  / year<small>Just $8.25 per month</small>
+                  / {yearlyBilling ? "year" : "month"}
+                  <small>
+                    {yearlyBilling
+                      ? "Just $12.42 per month"
+                      : "Cancel renewal anytime"}
+                  </small>
                 </span>
               </div>
-              <button
-                className="white-btn"
-                onClick={() => showToast("Plan selected — checkout is UI-only")}
-              >
+              <Link className="white-btn" href="/pricing">
                 Start your membership <ArrowRight />
-              </button>
+              </Link>
               <p>
                 <ShieldCheck /> 14-day money-back guarantee
               </p>
