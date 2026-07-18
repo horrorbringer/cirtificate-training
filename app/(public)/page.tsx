@@ -510,8 +510,12 @@ export default function Home() {
             </div>
             <p>Learning without borders. Recognition without limits.</p>
             <div>
-              <button>About</button>
-              <button>Support</button>
+              <Link className="text-[10px] text-[#6f7a8c]" href="/about">
+                About
+              </Link>
+              <Link className="text-[10px] text-[#6f7a8c]" href="/support">
+                Support
+              </Link>
               <Link
                 className="text-[10px] text-[#6f7a8c]"
                 href="/privacy-policy"
