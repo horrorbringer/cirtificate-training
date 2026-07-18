@@ -3,7 +3,8 @@
 import {
   Activity, ArrowDownRight, ArrowUpRight, Award, Bell, BookOpen, ChevronDown,
   CircleDollarSign, FileText, GraduationCap, LayoutDashboard, Megaphone, Menu,
-  MoreHorizontal, Plus, Search, Settings, ShieldCheck, Users, WalletCards, X,
+  Filter, Mail, MoreHorizontal, Plus, Search, Settings, ShieldCheck, UserCheck,
+  Users, UserX, WalletCards, X,
 } from "lucide-react"
 import { useState } from "react"
 
@@ -11,6 +12,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
   DropdownMenuSeparator, DropdownMenuTrigger,
@@ -44,6 +46,21 @@ const certificates = [
 export function AdminDashboard({ onExit, notify }: { onExit: () => void; notify: (message: string) => void }) {
   const [active, setActive] = useState("Overview")
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [memberQuery, setMemberQuery] = useState("")
+  const [planFilter, setPlanFilter] = useState("All plans")
+  const [statusFilter, setStatusFilter] = useState("All statuses")
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([])
+  const visibleMembers = members.filter(member =>
+    (planFilter === "All plans" || member.plan === planFilter) &&
+    (statusFilter === "All statuses" || member.status === statusFilter) &&
+    `${member.name} ${member.email} ${member.country}`.toLowerCase().includes(memberQuery.toLowerCase())
+  )
+  const allVisibleSelected = visibleMembers.length > 0 && visibleMembers.every(member => selectedMembers.includes(member.email))
+  const toggleAllMembers = () => setSelectedMembers(allVisibleSelected ? selectedMembers.filter(email => !visibleMembers.some(member => member.email === email)) : [...new Set([...selectedMembers, ...visibleMembers.map(member => member.email)])])
+  const runMemberBulkAction = (action: string) => {
+    notify(`${action} applied to ${selectedMembers.length} member${selectedMembers.length === 1 ? "" : "s"} — UI demo`)
+    setSelectedMembers([])
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-950">
@@ -96,7 +113,7 @@ export function AdminDashboard({ onExit, notify }: { onExit: () => void; notify:
             <Tabs defaultValue="members" className="space-y-4">
               <TabsList><TabsTrigger value="members">Recent members</TabsTrigger><TabsTrigger value="certificates">Certificate queue</TabsTrigger></TabsList>
               <TabsContent value="members">
-                <Card><CardHeader className="flex-row items-center justify-between"><div><CardTitle>New members</CardTitle><CardDescription>Latest registrations from around the world</CardDescription></div><Button variant="outline" size="sm" onClick={() => notify("Member directory opened")}>View all</Button></CardHeader><CardContent className="px-0"><Table><TableHeader><TableRow><TableHead className="pl-6">Member</TableHead><TableHead>Country</TableHead><TableHead>Plan</TableHead><TableHead>Status</TableHead><TableHead>Joined</TableHead><TableHead className="w-12" /></TableRow></TableHeader><TableBody>{members.map(member=><TableRow key={member.email}><TableCell className="pl-6"><div className="flex items-center gap-3"><Avatar className="size-8"><AvatarFallback className="bg-slate-100 text-[10px]">{member.initials}</AvatarFallback></Avatar><div><p className="text-xs font-semibold">{member.name}</p><p className="text-[10px] text-slate-500">{member.email}</p></div></div></TableCell><TableCell className="text-xs text-slate-600">{member.country}</TableCell><TableCell><Badge variant={member.plan === "Free" ? "secondary" : "outline"}>{member.plan}</Badge></TableCell><TableCell><Badge className={member.status === "Active" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}>{member.status}</Badge></TableCell><TableCell className="text-xs text-slate-500">{member.joined}</TableCell><TableCell><RowMenu notify={notify} /></TableCell></TableRow>)}</TableBody></Table></CardContent></Card>
+                <Card><CardHeader className="gap-4"><div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center"><div><CardTitle>New members</CardTitle><CardDescription>Latest registrations from around the world</CardDescription></div><Button variant="outline" size="sm" onClick={() => notify("Member directory opened")}>View all</Button></div><div className="flex flex-col gap-2 lg:flex-row lg:items-center"><div className="relative min-w-0 flex-1"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" /><Input value={memberQuery} onChange={event => setMemberQuery(event.target.value)} className="pl-9" placeholder="Search name, email, or country" /></div><FilterMenu label={planFilter} options={["All plans", "Free", "Monthly", "Yearly"]} onSelect={setPlanFilter} /><FilterMenu label={statusFilter} options={["All statuses", "Active", "Pending"]} onSelect={setStatusFilter} />{selectedMembers.length > 0 && <DropdownMenu><DropdownMenuTrigger asChild><Button className="bg-emerald-600 hover:bg-emerald-700">{selectedMembers.length} selected <ChevronDown /></Button></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuLabel>Bulk actions</DropdownMenuLabel><DropdownMenuSeparator /><DropdownMenuItem onClick={() => runMemberBulkAction("Activated")}><UserCheck /> Mark active</DropdownMenuItem><DropdownMenuItem onClick={() => runMemberBulkAction("Message queued")}><Mail /> Send message</DropdownMenuItem><DropdownMenuItem variant="destructive" onClick={() => runMemberBulkAction("Suspended")}><UserX /> Suspend members</DropdownMenuItem></DropdownMenuContent></DropdownMenu>}</div></CardHeader><CardContent className="px-0"><Table><TableHeader><TableRow><TableHead className="w-12 pl-6"><Checkbox aria-label="Select all visible members" checked={allVisibleSelected ? true : selectedMembers.some(email => visibleMembers.some(member => member.email === email)) ? "indeterminate" : false} onCheckedChange={toggleAllMembers} /></TableHead><TableHead>Member</TableHead><TableHead>Country</TableHead><TableHead>Plan</TableHead><TableHead>Status</TableHead><TableHead>Joined</TableHead><TableHead className="w-12" /></TableRow></TableHeader><TableBody>{visibleMembers.map(member=><TableRow key={member.email} data-state={selectedMembers.includes(member.email) ? "selected" : undefined}><TableCell className="pl-6"><Checkbox aria-label={`Select ${member.name}`} checked={selectedMembers.includes(member.email)} onCheckedChange={() => setSelectedMembers(current => current.includes(member.email) ? current.filter(email => email !== member.email) : [...current, member.email])} /></TableCell><TableCell><div className="flex items-center gap-3"><Avatar className="size-8"><AvatarFallback className="bg-slate-100 text-[10px]">{member.initials}</AvatarFallback></Avatar><div><p className="text-xs font-semibold">{member.name}</p><p className="text-[10px] text-slate-500">{member.email}</p></div></div></TableCell><TableCell className="text-xs text-slate-600">{member.country}</TableCell><TableCell><Badge variant={member.plan === "Free" ? "secondary" : "outline"}>{member.plan}</Badge></TableCell><TableCell><Badge className={member.status === "Active" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}>{member.status}</Badge></TableCell><TableCell className="text-xs text-slate-500">{member.joined}</TableCell><TableCell><RowMenu notify={notify} /></TableCell></TableRow>)}{visibleMembers.length === 0 && <TableRow><TableCell colSpan={7} className="h-32 text-center"><Search className="mx-auto mb-2 size-5 text-slate-400" /><p className="text-sm font-medium">No members found</p><p className="text-xs text-slate-500">Try changing your search or filters.</p></TableCell></TableRow>}</TableBody></Table><div className="flex items-center justify-between border-t px-6 py-3 text-xs text-slate-500"><span>Showing {visibleMembers.length} of {members.length} members</span>{(memberQuery || planFilter !== "All plans" || statusFilter !== "All statuses") && <Button variant="ghost" size="sm" onClick={() => { setMemberQuery(""); setPlanFilter("All plans"); setStatusFilter("All statuses"); }}>Clear filters</Button>}</div></CardContent></Card>
               </TabsContent>
               <TabsContent value="certificates"><Card><CardHeader><CardTitle>Certificate requests</CardTitle><CardDescription>Review eligibility before approving certificates</CardDescription></CardHeader><CardContent className="space-y-3">{certificates.map(([name, course, status, time])=><div key={name} className="flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center"><span className="grid size-10 place-items-center rounded-lg bg-amber-50 text-amber-600"><Award /></span><div className="flex-1"><p className="text-sm font-semibold">{name}</p><p className="text-xs text-slate-500">{course} · {time}</p></div><Badge variant="outline">{status}</Badge><Button size="sm" onClick={() => notify(`${name}'s eligibility review opened`)}>Review</Button></div>)}</CardContent></Card></TabsContent>
             </Tabs>
@@ -113,6 +130,10 @@ function Metric({ title, value, change, detail, icon: Icon, positive = false }: 
 
 function PlanRow({ label, value, percent, color }: { label: string; value: string; percent: number; color: string }) {
   return <div><div className="mb-2 flex justify-between text-xs"><span className="font-medium">{label}</span><span className="text-slate-500">{value} members</span></div><Progress value={percent} className={color} /></div>
+}
+
+function FilterMenu({ label, options, onSelect }: { label: string; options: string[]; onSelect: (value: string) => void }) {
+  return <DropdownMenu><DropdownMenuTrigger asChild><Button variant="outline" className="justify-between lg:min-w-32"><Filter />{label}<ChevronDown className="ml-auto" /></Button></DropdownMenuTrigger><DropdownMenuContent align="end">{options.map(option => <DropdownMenuItem key={option} onClick={() => onSelect(option)}>{option}</DropdownMenuItem>)}</DropdownMenuContent></DropdownMenu>
 }
 
 function RowMenu({ notify }: { notify: (message: string) => void }) {

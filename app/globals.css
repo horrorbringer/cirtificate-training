@@ -856,3 +856,38 @@ strong, b { font-weight: 700; }
   .member-workspace .dash-title h1,
   .member-workspace .member-section-title h1 { font-size: 1.75rem; }
 }
+
+/* Inter has a stronger stroke than the previous font; keep the hierarchy lighter. */
+body { font-weight: 400; }
+
+h1, h2, h3, h4, h5, h6,
+[data-slot="card-title"] { font-weight: 650; }
+
+button,
+[data-slot="button"] { font-weight: 550; }
+
+strong, b { font-weight: 600; }
+
+.brand,
+.footer-brand { font-weight: 700; }
+
+.hero h1 { font-weight: 680; }
+.section-head h2,
+.plans-section h2,
+.course-detail-copy h1,
+.dash-title h1,
+.member-section-title h1 { font-weight: 650; }
+
+.eyebrow, .kicker,
+.visual-info > small,
+.detail-badges,
+.course-meta,
+.dash-title > div > span,
+.member-section-title > div > span { font-weight: 650; }
+
+.member-sidebar [data-slot="button"] { font-weight: 500; }
+.member-sidebar [data-slot="button"].active { font-weight: 600; }
+.member-sidebar > div > small { font-weight: 600; }
+.member-workspace .stat-card strong,
+.member-workspace .course-summary strong,
+.member-workspace .certificate-stats strong { font-weight: 600; }
