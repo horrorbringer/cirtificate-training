@@ -9,6 +9,7 @@ import {
   CalendarDays,
   Camera,
   Check,
+  CheckCircle2,
   ChevronDown,
   CirclePlay,
   Clock3,
@@ -56,6 +57,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -2186,6 +2188,28 @@ function MyCourses({
 }
 
 function MyCertificates({ notify }: { notify: (message: string) => void }) {
+  const [requestOpen, setRequestOpen] = useState(false);
+  const [requestStep, setRequestStep] = useState(1);
+  const [requestCourse, setRequestCourse] = useState(
+    "Effective Team Leadership",
+  );
+  const [confirmed, setConfirmed] = useState(false);
+  const [requestSent, setRequestSent] = useState(false);
+
+  const startRequest = () => {
+    setRequestOpen(true);
+    setRequestStep(1);
+    setRequestSent(false);
+    setConfirmed(false);
+    window.setTimeout(
+      () =>
+        document
+          .querySelector("#certificate-request")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" }),
+      20,
+    );
+  };
+
   return (
     <div className="certificates-view">
       <div className="member-section-title">
@@ -2197,13 +2221,190 @@ function MyCertificates({ notify }: { notify: (message: string) => void }) {
             courses.
           </p>
         </div>
-        <Button
-          className="primary-btn"
-          onClick={() => notify("Certificate request form opened")}
-        >
+        <Button className="primary-btn" onClick={startRequest}>
           <Plus /> Request certificate
         </Button>
       </div>
+      {requestOpen && (
+        <Card
+          id="certificate-request"
+          className="overflow-hidden border-emerald-200 py-0 shadow-sm"
+        >
+          <CardHeader className="border-b bg-emerald-50/60 p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <Badge className="bg-emerald-100 text-emerald-700">
+                  Certificate request
+                </Badge>
+                <CardTitle className="mt-3 text-xl">
+                  {requestSent
+                    ? "Request submitted"
+                    : "Request a verified certificate"}
+                </CardTitle>
+                <CardDescription className="mt-1">
+                  {requestSent
+                    ? "Your course completion is ready for administrator review."
+                    : `Step ${requestStep} of 3 · Review before submitting`}
+                </CardDescription>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setRequestOpen(false)}
+                aria-label="Close certificate request"
+              >
+                <X />
+              </Button>
+            </div>
+            {!requestSent && (
+              <div className="mt-4 grid grid-cols-3 gap-2">
+                {["Course", "Review", "Submit"].map((label, index) => (
+                  <div key={label}>
+                    <div
+                      className={`h-1.5 rounded-full ${requestStep >= index + 1 ? "bg-emerald-500" : "bg-emerald-100"}`}
+                    />
+                    <small className="mt-1.5 block text-[10px] text-slate-500">
+                      {index + 1}. {label}
+                    </small>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardHeader>
+          <CardContent className="p-5">
+            {requestSent ? (
+              <div className="flex flex-col items-center py-5 text-center">
+                <span className="grid size-14 place-items-center rounded-full bg-emerald-100 text-emerald-700">
+                  <CheckCircle2 className="size-7" />
+                </span>
+                <h3 className="mt-4 font-semibold">Successfully submitted</h3>
+                <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
+                  Request CR-2026-0248 for {requestCourse} is under review. A
+                  decision usually takes 2–3 business days.
+                </p>
+                <div className="mt-5 flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setRequestOpen(false)}
+                  >
+                    Close
+                  </Button>
+                  <Button onClick={() => notify("Request CR-2026-0248 opened")}>
+                    View request
+                  </Button>
+                </div>
+              </div>
+            ) : requestStep === 1 ? (
+              <div>
+                <h3 className="text-sm font-medium">Select eligible course</h3>
+                <p className="mt-1 text-xs text-slate-500">
+                  Only completed courses meeting certificate requirements are
+                  available.
+                </p>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  {[
+                    "Effective Team Leadership",
+                    "Digital Marketing Strategy",
+                  ].map((course, index) => (
+                    <button
+                      key={course}
+                      onClick={() => setRequestCourse(course)}
+                      className={`rounded-xl border p-4 text-left ${requestCourse === course ? "border-emerald-500 bg-emerald-50/60 ring-2 ring-emerald-500/10" : "hover:border-slate-300"}`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="grid size-9 place-items-center rounded-lg bg-emerald-100 text-emerald-700">
+                          <Award className="size-4" />
+                        </span>
+                        {requestCourse === course && (
+                          <CheckCircle2 className="size-5 text-emerald-600" />
+                        )}
+                      </div>
+                      <strong className="mt-3 block text-sm">{course}</strong>
+                      <small className="mt-1 block text-xs text-slate-500">
+                        {index === 0 ? "28 lessons" : "36 lessons"} · Final
+                        assessment passed
+                      </small>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-5 md:grid-cols-[1fr_260px]">
+                <div>
+                  <h3 className="text-sm font-medium">
+                    Review request details
+                  </h3>
+                  <dl className="mt-4 grid gap-4 rounded-xl bg-slate-50 p-4 sm:grid-cols-2">
+                    {[
+                      ["Learner", "Amina Mensah"],
+                      ["Course", requestCourse],
+                      ["Completion", "100% · All lessons"],
+                      ["Assessment", "Passed · 88%"],
+                      ["Membership", "Yearly Premium"],
+                      ["Certificate fee", "$0 · Included"],
+                    ].map(([label, value]) => (
+                      <div key={label}>
+                        <dt className="text-[10px] uppercase tracking-wide text-slate-400">
+                          {label}
+                        </dt>
+                        <dd className="mt-1 text-xs font-medium text-slate-800">
+                          {value}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                  <label className="mt-4 flex items-start gap-3 rounded-lg border p-3 text-xs leading-5 text-slate-600">
+                    <Checkbox
+                      checked={confirmed}
+                      onCheckedChange={(checked) =>
+                        setConfirmed(checked === true)
+                      }
+                    />
+                    I confirm that my profile name is correct and understand it
+                    will appear on the issued certificate.
+                  </label>
+                </div>
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+                  <ShieldCheck className="size-5 text-amber-700" />
+                  <h3 className="mt-3 text-sm font-medium text-amber-950">
+                    What happens next
+                  </h3>
+                  <ol className="mt-3 space-y-2 text-xs leading-5 text-amber-900/70">
+                    <li>1. Completion is reviewed</li>
+                    <li>2. Certificate is approved</li>
+                    <li>3. PDF and verification link appear here</li>
+                  </ol>
+                </div>
+              </div>
+            )}
+          </CardContent>
+          {!requestSent && (
+            <CardFooter className="justify-between bg-slate-50 p-4">
+              <Button
+                variant="outline"
+                disabled={requestStep === 1}
+                onClick={() => setRequestStep((step) => Math.max(1, step - 1))}
+              >
+                Back
+              </Button>
+              <Button
+                disabled={requestStep > 1 && !confirmed}
+                onClick={() => {
+                  if (requestStep === 1) setRequestStep(2);
+                  else if (requestStep === 2) setRequestStep(3);
+                  else {
+                    setRequestSent(true);
+                    notify("Certificate request submitted successfully");
+                  }
+                }}
+              >
+                {requestStep === 3 ? "Submit request" : "Continue"}
+                <ArrowRight />
+              </Button>
+            </CardFooter>
+          )}
+        </Card>
+      )}
       <div className="certificate-stats">
         <CertificateMetric
           icon={<Award />}
@@ -2300,10 +2501,7 @@ function MyCertificates({ notify }: { notify: (message: string) => void }) {
                 verified certificate.
               </p>
             </div>
-            <Button
-              size="sm"
-              onClick={() => notify("Certificate request started")}
-            >
+            <Button size="sm" onClick={startRequest}>
               Request now <ArrowRight />
             </Button>
           </CardContent>

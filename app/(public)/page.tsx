@@ -16,7 +16,6 @@ import {
   Download,
   FileText,
   Globe2,
-  GraduationCap,
   LayoutDashboard,
   ListVideo,
   LockKeyhole,
@@ -435,45 +434,6 @@ export default function Home() {
               </p>
             </div>
           </section>
-
-          <footer>
-            <div className="brand footer-brand">
-              <span className="brand-mark">
-                <GraduationCap size={22} />
-              </span>
-              <span>
-                Certi<span>Learn</span>
-              </span>
-            </div>
-            <p>Learning without borders. Recognition without limits.</p>
-            <div>
-              <Link className="text-[10px] text-[#6f7a8c]" href="/about">
-                About
-              </Link>
-              <Link className="text-[10px] text-[#6f7a8c]" href="/support">
-                Support
-              </Link>
-              <Link
-                className="text-[10px] text-[#6f7a8c]"
-                href="/announcements"
-              >
-                News
-              </Link>
-              <Link className="text-[10px] text-[#6f7a8c]" href="/pricing">
-                Pricing
-              </Link>
-              <Link
-                className="text-[10px] text-[#6f7a8c]"
-                href="/privacy-policy"
-              >
-                Privacy
-              </Link>
-              <Link className="text-[10px] text-[#6f7a8c]" href="/terms">
-                Terms
-              </Link>
-            </div>
-            <small>© 2026 CertiLearn. UI concept only.</small>
-          </footer>
         </>
       ) : (
         <CourseDetail
