@@ -64,23 +64,6 @@ export function LegalPage({ type }: { type: "terms" | "privacy" }) {
   const sections = privacy ? privacySections : termsSections;
   return (
     <main className="min-h-screen bg-slate-50 text-slate-950">
-      <header className="border-b bg-white">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center rounded-xl bg-emerald-600 text-white">
-              <GraduationCap className="size-5" />
-            </span>
-            <strong className="text-lg">
-              Certi<span className="text-emerald-600">Learn</span>
-            </strong>
-          </Link>
-          <Button asChild variant="ghost">
-            <Link href="/">
-              <ArrowLeft /> Back to website
-            </Link>
-          </Button>
-        </div>
-      </header>
       <section className="border-b bg-slate-950 px-5 py-16 text-white">
         <div className="mx-auto max-w-4xl">
           <Badge className="mb-5 bg-emerald-400/10 text-emerald-300">

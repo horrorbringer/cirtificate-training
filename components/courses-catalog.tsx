@@ -178,39 +178,6 @@ export function CoursesCatalog() {
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-950">
-      <header className="border-b bg-white">
-        <div className="mx-auto flex h-16 max-w-7xl items-center gap-8 px-5">
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center rounded-xl bg-emerald-600 text-white">
-              <GraduationCap className="size-5" />
-            </span>
-            <strong className="text-lg font-semibold">
-              Certi<span className="text-emerald-600">Learn</span>
-            </strong>
-          </Link>
-          <nav className="hidden items-center gap-1 md:flex">
-            <Button asChild variant="ghost">
-              <Link href="/">Home</Link>
-            </Button>
-            <Button variant="secondary">Courses</Button>
-            <Button asChild variant="ghost">
-              <Link href="/pricing">Pricing</Link>
-            </Button>
-            <Button asChild variant="ghost">
-              <Link href="/about">About</Link>
-            </Button>
-          </nav>
-          <div className="ml-auto flex items-center gap-2">
-            <Button asChild variant="ghost" className="hidden sm:inline-flex">
-              <Link href="/login">Log in</Link>
-            </Button>
-            <Button asChild className="bg-emerald-600 hover:bg-emerald-700">
-              <Link href="/register">Start learning</Link>
-            </Button>
-          </div>
-        </div>
-      </header>
-
       <section className="border-b bg-slate-950 px-5 py-14 text-white md:py-20">
         <div className="mx-auto max-w-7xl">
           <Badge className="mb-4 bg-emerald-400/10 text-emerald-300">

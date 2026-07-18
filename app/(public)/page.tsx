@@ -182,69 +182,6 @@ export default function Home() {
 
   return (
     <main>
-      <header className="site-header">
-        <button className="brand" onClick={goHome} aria-label="CertiLearn home">
-          <span className="brand-mark">
-            <GraduationCap size={22} />
-          </span>
-          <span>
-            Certi<span>Learn</span>
-          </span>
-        </button>
-        <nav className={mobileOpen ? "nav-links open" : "nav-links"}>
-          <button onClick={goHome}>Explore</button>
-          <Link
-            className="text-sm font-medium text-[#536078] hover:text-emerald-600"
-            href="/courses"
-          >
-            Courses
-          </Link>
-          <button
-            onClick={() => {
-              goHome();
-              setTimeout(
-                () =>
-                  document
-                    .querySelector("#plans")
-                    ?.scrollIntoView({ behavior: "smooth" }),
-                30,
-              );
-            }}
-          >
-            Plans
-          </button>
-          <Link
-            className="text-sm font-medium text-[#536078] hover:text-emerald-600"
-            href="/announcements"
-          >
-            Announcements
-          </Link>
-          <button onClick={goVerify}>Verify certificate</button>
-        </nav>
-        <div className="header-actions">
-          <button
-            className="icon-btn"
-            aria-label="Notifications"
-            onClick={() => showToast("You have 3 new notifications")}
-          >
-            <Bell size={19} />
-            <i />
-          </button>
-          <button className="login-link" onClick={goLogin}>
-            Log in
-          </button>
-          <button className="register-link" onClick={goRegister}>
-            Create account
-          </button>
-          <button
-            className="menu-btn"
-            onClick={() => setMobileOpen(!mobileOpen)}
-          >
-            {mobileOpen ? <X /> : <Menu />}
-          </button>
-        </div>
-      </header>
-
       {view === "home" ? (
         <>
           <section className="hero">

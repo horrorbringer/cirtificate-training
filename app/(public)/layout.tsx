@@ -1,3 +1,12 @@
-export default function PublicLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <div data-layout="public">{children}</div>
+import { PublicNavbar } from "@/components/public-navbar";
+
+export default function PublicLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <div data-layout="public">
+      <PublicNavbar />
+      {children}
+    </div>
+  );
 }
