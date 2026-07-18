@@ -771,3 +771,88 @@ strong, b { font-weight: 700; }
   .hero-copy > p { font-size: 0.9375rem; }
   .section-head p, .plan-copy > p { font-size: 0.875rem; }
 }
+
+/* Member dashboard readability: replace the original miniature mockup scale. */
+.member-workspace .dashboard-content {
+  padding: 42px clamp(28px, 3.5vw, 56px);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.member-workspace .dash-title p,
+.member-workspace .member-section-title p { font-size: 0.9375rem; }
+.member-workspace .dash-title > div > span,
+.member-workspace .member-section-title > div > span { font-size: 0.75rem; }
+.member-workspace .dash-title h1,
+.member-workspace .member-section-title h1 { font-size: clamp(1.9rem, 2.4vw, 2.4rem); }
+
+.member-sidebar [data-slot="button"] {
+  height: 44px;
+  font-size: 0.875rem;
+}
+.member-sidebar > div > small { font-size: 0.6875rem; }
+.member-sidebar [data-slot="badge"] { font-size: 0.6875rem; }
+.member-sidebar .upgrade-card strong { font-size: 0.875rem; }
+.member-sidebar .upgrade-card [data-slot="card-content"] > span { font-size: 0.75rem; }
+.member-sidebar .upgrade-card [data-slot="button"] { font-size: 0.8125rem; }
+
+.member-workspace .stat-card strong { font-size: 1.6rem; }
+.member-workspace .stat-card p { font-size: 0.875rem; }
+.member-workspace .stat-card small { font-size: 0.75rem; }
+.member-workspace .panel-head h2,
+.member-workspace .certificate-heading h2 { font-size: 1.125rem; }
+.member-workspace .panel-head p,
+.member-workspace .certificate-heading p { font-size: 0.8125rem; }
+.member-workspace .continue-info h3 { font-size: 1.125rem; }
+.member-workspace .continue-info p { font-size: 0.8125rem; }
+.member-workspace .continue-info small { font-size: 0.75rem; }
+.member-workspace .activity strong { font-size: 0.8125rem; }
+.member-workspace .activity p,
+.member-workspace .activity small { font-size: 0.75rem; }
+
+.member-workspace .course-summary strong { font-size: 1.35rem; }
+.member-workspace .course-summary small { font-size: 0.75rem; }
+.member-workspace .course-filter-row button,
+.member-workspace .resource-toolbar button { font-size: 0.8125rem; }
+.member-workspace .course-filter-row input,
+.member-workspace .resource-toolbar input { font-size: 0.8125rem; }
+.member-workspace .enrolled-category { font-size: 0.6875rem; }
+.member-workspace .enrolled-copy h2 { font-size: 1.0625rem; }
+.member-workspace .enrolled-copy > p { font-size: 0.8125rem; }
+.member-workspace .enrolled-progress span,
+.member-workspace .enrolled-bottom small,
+.member-workspace .enrolled-bottom button { font-size: 0.75rem; }
+
+.member-workspace .certificate-stats strong { font-size: 1.5rem; }
+.member-workspace .certificate-stats p { font-size: 0.8125rem; }
+.member-workspace .certificate-stats small { font-size: 0.75rem; }
+.member-workspace .certificate-heading button { font-size: 0.75rem; }
+.member-workspace .certificate-card-copy h2 { font-size: 0.875rem; }
+.member-workspace .certificate-card-copy p,
+.member-workspace .certificate-card-copy button,
+.member-workspace .active-badge { font-size: 0.6875rem; }
+.member-workspace .status-card h3 { font-size: 1rem; }
+.member-workspace .status-card p,
+.member-workspace .status-card > button { font-size: 0.8125rem; }
+
+.member-workspace .resource-highlight small { font-size: 0.6875rem; }
+.member-workspace .resource-highlight h2 { font-size: 1.35rem; }
+.member-workspace .resource-highlight p { font-size: 0.8125rem; }
+.member-workspace .resource-highlight > div:last-child span { font-size: 0.8125rem; }
+.member-workspace .resource-table th { font-size: 0.6875rem; }
+.member-workspace .resource-name strong { font-size: 0.875rem; }
+.member-workspace .resource-name small,
+.member-workspace .resource-file small { font-size: 0.75rem; }
+.member-workspace .resource-course,
+.member-workspace .resource-file strong,
+.member-workspace .access,
+.member-workspace .download-action { font-size: 0.75rem; }
+.member-workspace .download-note strong { font-size: 0.8125rem; }
+.member-workspace .download-note p,
+.member-workspace .download-note button { font-size: 0.75rem; }
+
+@media (max-width: 760px) {
+  .member-workspace .dashboard-content { padding: 28px 18px; }
+  .member-workspace .dash-title h1,
+  .member-workspace .member-section-title h1 { font-size: 1.75rem; }
+}
