@@ -1871,6 +1871,8 @@ footer button {
   overflow: hidden;
 }
 .module-head {
+  width: 100%;
+  border: 0;
   padding: 13px 15px;
   background: #f7f9fb;
   display: flex;
@@ -1897,8 +1899,12 @@ footer button {
 .module-head > svg {
   width: 15px;
   color: #8390a1;
+  transition: transform 0.2s ease;
 }
-.module > button {
+.module-head > svg.open {
+  transform: rotate(180deg);
+}
+.module > button:not(.module-head) {
   width: 100%;
   border: 0;
   border-top: 1px solid var(--line);
@@ -1909,11 +1915,11 @@ footer button {
   gap: 10px;
   text-align: left;
 }
-.module > button:hover,
-.module > button.active {
+.module > button:not(.module-head):hover,
+.module > button:not(.module-head).active {
   background: #f0faf8;
 }
-.module > button > span {
+.module > button:not(.module-head) > span {
   width: 25px;
   height: 25px;
   border-radius: 50%;
@@ -2360,7 +2366,7 @@ footer button {
   .curriculum {
     padding: 20px 16px;
   }
-  .module > button {
+  .module > button:not(.module-head) {
     padding-left: 15px;
   }
   .course-numbers {
@@ -3610,10 +3616,9 @@ footer button {
 }
 .resource-row {
   display: grid;
-  grid-template-columns: 38px minmax(170px, 1.4fr) minmax(
-      160px,
-      1fr
-    ) 65px 85px 75px;
+  grid-template-columns:
+    38px minmax(170px, 1.4fr) minmax(160px, 1fr)
+    65px 85px 75px;
   align-items: center;
   gap: 12px;
   border-bottom: 1px solid #edf0f4;

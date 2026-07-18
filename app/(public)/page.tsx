@@ -741,6 +741,8 @@ export function CourseDetail({
             <Curriculum
               activeLesson={activeLesson}
               setActiveLesson={setActiveLesson}
+              enrolled={enrolled}
+              onLocked={() => showToast("Enroll to unlock this lesson")}
             />
           )}
           {tab === "resources" && (
@@ -851,10 +853,22 @@ export function CourseDetail({
 function Curriculum({
   activeLesson,
   setActiveLesson,
+  enrolled,
+  onLocked,
 }: {
   activeLesson: string;
   setActiveLesson: (lesson: string) => void;
+  enrolled: boolean;
+  onLocked: () => void;
 }) {
+  const [openModules, setOpenModules] = useState<number[]>([0]);
+  const toggleModule = (index: number) =>
+    setOpenModules((current) =>
+      current.includes(index)
+        ? current.filter((item) => item !== index)
+        : [...current, index],
+    );
+
   return (
     <div className="curriculum">
       <div className="curriculum-head">
@@ -866,7 +880,11 @@ function Curriculum({
       </div>
       {lessonGroups.map((group, gi) => (
         <div className="module" key={group.title}>
-          <div className="module-head">
+          <button
+            className="module-head"
+            onClick={() => toggleModule(gi)}
+            aria-expanded={openModules.includes(gi)}
+          >
             <span>{String(gi + 1).padStart(2, "0")}</span>
             <div>
               <strong>{group.title}</strong>
@@ -874,30 +892,37 @@ function Curriculum({
                 {group.lessons.length} lessons · {group.duration}
               </small>
             </div>
-            <ChevronDown />
-          </div>
-          {group.lessons.map((lesson, li) => (
-            <button
-              className={activeLesson === lesson ? "active" : ""}
-              onClick={() => setActiveLesson(lesson)}
-              key={lesson}
-            >
-              <span
-                className={gi === 0 && li === 0 ? "lesson-done" : "lesson-play"}
+            <ChevronDown className={openModules.includes(gi) ? "open" : ""} />
+          </button>
+          {openModules.includes(gi) &&
+            group.lessons.map((lesson, li) => (
+              <button
+                className={activeLesson === lesson ? "active" : ""}
+                onClick={() =>
+                  enrolled || (gi === 0 && li === 0)
+                    ? setActiveLesson(lesson)
+                    : onLocked()
+                }
+                key={lesson}
               >
-                {gi === 0 && li === 0 ? (
-                  <Check />
-                ) : (
-                  <Play fill="currentColor" />
-                )}
-              </span>
-              <div>
-                <strong>{lesson}</strong>
-                <small>Video · {8 + li * 4} min</small>
-              </div>
-              {gi > 0 && <LockKeyhole />}
-            </button>
-          ))}
+                <span
+                  className={
+                    gi === 0 && li === 0 ? "lesson-done" : "lesson-play"
+                  }
+                >
+                  {gi === 0 && li === 0 ? (
+                    <Check />
+                  ) : (
+                    <Play fill="currentColor" />
+                  )}
+                </span>
+                <div>
+                  <strong>{lesson}</strong>
+                  <small>Video · {8 + li * 4} min</small>
+                </div>
+                {!enrolled && (gi > 0 || li > 0) && <LockKeyhole />}
+              </button>
+            ))}
         </div>
       ))}
     </div>

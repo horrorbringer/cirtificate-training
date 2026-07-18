@@ -5,6 +5,7 @@ import {
   Award,
   Bell,
   BookOpen,
+  Captions,
   CalendarDays,
   Camera,
   Check,
@@ -26,17 +27,23 @@ import {
   Mail,
   MapPin,
   Menu,
+  Maximize,
+  Pause,
   Phone,
   Plus,
   ReceiptText,
   RotateCcw,
   Save,
   Search,
+  Settings2,
   ShieldCheck,
   Sparkles,
   Star,
+  SkipBack,
+  SkipForward,
   Trash2,
   Users,
+  Volume2,
   X,
   Zap,
 } from "lucide-react";
@@ -974,6 +981,14 @@ const learningLessons = [
 
 function ContinueLearning({ notify }: { notify: (message: string) => void }) {
   const [activeLesson, setActiveLesson] = useState("Visualizing your data");
+  const [playing, setPlaying] = useState(false);
+  const [captions, setCaptions] = useState(true);
+  const [volume, setVolume] = useState(72);
+  const [position, setPosition] = useState(38);
+  const [completed, setCompleted] = useState<string[]>([
+    "Organizing data for analysis",
+    "Creating effective formulas",
+  ]);
   const [notes, setNotes] = useState(
     "Remember to use consistent colors and labels when comparing multiple data series.",
   );
@@ -995,29 +1010,110 @@ function ContinueLearning({ notify }: { notify: (message: string) => void }) {
               <Button
                 size="icon"
                 className="relative size-16 rounded-full bg-emerald-500 hover:bg-emerald-400"
-                onClick={() => notify(`${activeLesson} playback started`)}
+                onClick={() => setPlaying(!playing)}
+                aria-label={playing ? "Pause lesson" : "Play lesson"}
               >
-                <CirclePlay className="size-8" />
+                {playing ? (
+                  <Pause className="size-8" />
+                ) : (
+                  <CirclePlay className="size-8" />
+                )}
               </Button>
               <Badge className="absolute left-4 top-4 bg-black/40 text-white">
                 Module 4 · Lesson 3
               </Badge>
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 pt-14">
-                <div className="mb-3 h-1.5 overflow-hidden rounded-full bg-white/20">
-                  <div className="h-full w-[38%] rounded-full bg-emerald-400" />
-                </div>
-                <div className="flex items-center gap-3 text-xs">
+                <input
+                  aria-label="Video position"
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={position}
+                  onChange={(event) => setPosition(Number(event.target.value))}
+                  className="mb-3 h-1.5 w-full cursor-pointer accent-emerald-400"
+                />
+                <div className="flex items-center gap-2 text-xs">
                   <Button
                     variant="ghost"
                     size="icon-sm"
                     className="text-white hover:bg-white/10 hover:text-white"
+                    onClick={() => setPlaying(!playing)}
                   >
-                    <CirclePlay />
+                    {playing ? <Pause /> : <CirclePlay />}
                   </Button>
-                  <span>08:24 / 22:10</span>
-                  <span className="ml-auto">HD · CC</span>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    className="hidden text-white hover:bg-white/10 hover:text-white sm:inline-flex"
+                    onClick={() => setPosition(Math.max(0, position - 10))}
+                  >
+                    <SkipBack />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    className="hidden text-white hover:bg-white/10 hover:text-white sm:inline-flex"
+                    onClick={() => setPosition(Math.min(100, position + 10))}
+                  >
+                    <SkipForward />
+                  </Button>
+                  <span>
+                    {Math.round((position / 100) * 22)}:
+                    {String(
+                      Math.round((((position / 100) * 22) % 1) * 60),
+                    ).padStart(2, "0")}{" "}
+                    / 22:10
+                  </span>
+                  <div className="ml-auto hidden items-center gap-2 md:flex">
+                    <Volume2 className="size-4" />
+                    <input
+                      aria-label="Volume"
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={volume}
+                      onChange={(event) =>
+                        setVolume(Number(event.target.value))
+                      }
+                      className="h-1 w-16 accent-emerald-400"
+                    />
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    className={
+                      captions
+                        ? "bg-white/15 text-white hover:text-white"
+                        : "text-white hover:text-white"
+                    }
+                    onClick={() => setCaptions(!captions)}
+                    aria-label="Toggle captions"
+                  >
+                    <Captions />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    className="text-white hover:bg-white/10 hover:text-white"
+                    onClick={() => notify("Playback settings opened — UI demo")}
+                  >
+                    <Settings2 />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    className="text-white hover:bg-white/10 hover:text-white"
+                    onClick={() => notify("Fullscreen player opened — UI demo")}
+                  >
+                    <Maximize />
+                  </Button>
                 </div>
               </div>
+              {captions && playing && (
+                <div className="absolute bottom-20 rounded-md bg-black/75 px-3 py-1.5 text-center text-sm">
+                  Choose a chart that makes the pattern easy to understand.
+                </div>
+              )}
             </div>
             <CardContent className="p-5">
               <Badge variant="secondary">Data & Analytics</Badge>
@@ -1067,9 +1163,21 @@ function ContinueLearning({ notify }: { notify: (message: string) => void }) {
                 </p>
               </div>
               <Button
-                onClick={() =>
-                  notify("Lesson marked complete — next lesson unlocked")
-                }
+                onClick={() => {
+                  const currentIndex = learningLessons.findIndex(
+                    (lesson) => lesson.title === activeLesson,
+                  );
+                  setCompleted((items) =>
+                    items.includes(activeLesson)
+                      ? items
+                      : [...items, activeLesson],
+                  );
+                  const next = learningLessons[currentIndex + 1];
+                  if (next) setActiveLesson(next.title);
+                  setPosition(0);
+                  setPlaying(false);
+                  notify("Lesson complete — the next lesson is ready");
+                }}
               >
                 <Check /> Mark complete and continue
               </Button>
@@ -1097,9 +1205,14 @@ function ContinueLearning({ notify }: { notify: (message: string) => void }) {
                 <Button
                   key={lesson.title}
                   variant="ghost"
-                  disabled={lesson.state === "locked"}
+                  disabled={
+                    lesson.state === "locked" &&
+                    !completed.includes("Building an interactive dashboard")
+                  }
                   onClick={() => {
                     setActiveLesson(lesson.title);
+                    setPosition(0);
+                    setPlaying(false);
                     notify(`${lesson.title} selected`);
                   }}
                   className={`h-auto w-full justify-start gap-3 rounded-lg p-3 text-left ${activeLesson === lesson.title ? "bg-emerald-50 text-emerald-800" : ""}`}
@@ -1107,7 +1220,7 @@ function ContinueLearning({ notify }: { notify: (message: string) => void }) {
                   <span
                     className={`grid size-8 shrink-0 place-items-center rounded-full ${lesson.state === "done" ? "bg-emerald-100 text-emerald-700" : lesson.state === "locked" ? "bg-slate-100 text-slate-400" : "bg-sky-50 text-sky-700"}`}
                   >
-                    {lesson.state === "done" ? (
+                    {completed.includes(lesson.title) ? (
                       <Check className="size-4" />
                     ) : lesson.state === "locked" ? (
                       <LockKeyhole className="size-4" />
