@@ -193,20 +193,12 @@ export default function Home() {
         </button>
         <nav className={mobileOpen ? "nav-links open" : "nav-links"}>
           <button onClick={goHome}>Explore</button>
-          <button
-            onClick={() => {
-              goHome();
-              setTimeout(
-                () =>
-                  document
-                    .querySelector("#courses")
-                    ?.scrollIntoView({ behavior: "smooth" }),
-                30,
-              );
-            }}
+          <Link
+            className="text-sm font-medium text-[#536078] hover:text-emerald-600"
+            href="/courses"
           >
             Courses
-          </button>
+          </Link>
           <button
             onClick={() => {
               goHome();
@@ -375,15 +367,9 @@ export default function Home() {
                   schedule.
                 </p>
               </div>
-              <button
-                className="text-btn"
-                onClick={() => {
-                  setActiveCategory("All courses");
-                  setQuery("");
-                }}
-              >
+              <Link className="text-btn" href="/courses">
                 View all courses <ArrowRight size={17} />
-              </button>
+              </Link>
             </div>
             <div className="course-tools">
               <div className="category-tabs">
