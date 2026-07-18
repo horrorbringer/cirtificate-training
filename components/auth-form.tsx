@@ -301,8 +301,8 @@ function SuccessState({ isLogin }: { isLogin: boolean }) {
             : "Your free demo account is ready. You can now explore courses and learning resources."}
         </p>
         <Button asChild className="mt-6 bg-emerald-600 hover:bg-emerald-700">
-          <Link href="/dashboard">
-            Open my dashboard <ArrowRight />
+          <Link href={isLogin ? "/dashboard" : "/verify-email"}>
+            {isLogin ? "Open my dashboard" : "Verify my email"} <ArrowRight />
           </Link>
         </Button>
       </CardContent>
