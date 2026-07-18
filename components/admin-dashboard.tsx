@@ -800,8 +800,12 @@ export function AdminDashboard({
                 <DropdownMenuContent align="end">
                   <DropdownMenuLabel>Admin account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => setActive("Admin Profile")}>Profile</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setActive("Admin Security")}>Security</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setActive("Admin Profile")}>
+                    Profile
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setActive("Admin Security")}>
+                    Security
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={onExit}>
                     Return to website
                   </DropdownMenuItem>
@@ -1318,7 +1322,12 @@ export function AdminDashboard({
             ) : active === "Settings" ? (
               <AdminSettingsWorkspace notify={notify} />
             ) : active === "Admin Profile" || active === "Admin Security" ? (
-              <AdminAccountWorkspace initialTab={active === "Admin Security" ? "security" : "profile"} notify={notify} />
+              <AdminAccountWorkspace
+                initialTab={
+                  active === "Admin Security" ? "security" : "profile"
+                }
+                notify={notify}
+              />
             ) : (
               <AdminModulePreview active={active} notify={notify} />
             )}
@@ -4533,6 +4542,276 @@ function OutcomeRow({
         {change}
       </Badge>
     </div>
+  );
+}
+
+function AdminAccountWorkspace({
+  initialTab,
+  notify,
+}: {
+  initialTab: "profile" | "security";
+  notify: (message: string) => void;
+}) {
+  return (
+    <>
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <Badge variant="secondary" className="mb-2 text-emerald-700">
+            Administrator account
+          </Badge>
+          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
+            My account
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Manage your administrator identity, access, and active sessions.
+          </p>
+        </div>
+        <Button
+          className="bg-emerald-600 hover:bg-emerald-700"
+          onClick={() => notify("Admin account changes saved — UI demo")}
+        >
+          <CheckCircle2 /> Save changes
+        </Button>
+      </div>
+      <Tabs key={initialTab} defaultValue={initialTab} className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="profile">Profile</TabsTrigger>
+          <TabsTrigger value="security">Security</TabsTrigger>
+          <TabsTrigger value="sessions">Sessions</TabsTrigger>
+        </TabsList>
+        <TabsContent value="profile">
+          <div className="grid gap-4 xl:grid-cols-[300px_1fr]">
+            <Card className="h-fit">
+              <CardContent className="flex flex-col items-center pt-6 text-center">
+                <div className="relative">
+                  <Avatar className="size-24">
+                    <AvatarFallback className="bg-emerald-100 text-2xl text-emerald-700">
+                      SA
+                    </AvatarFallback>
+                  </Avatar>
+                  <Button
+                    size="icon"
+                    className="absolute -bottom-1 -right-1 rounded-full"
+                    onClick={() => notify("Admin photo picker opened")}
+                  >
+                    <Pencil />
+                  </Button>
+                </div>
+                <h2 className="mt-4 text-lg font-semibold">Sophia Admin</h2>
+                <p className="text-sm text-slate-500">sophia@certilearn.com</p>
+                <Badge className="mt-3 bg-slate-900 text-white">
+                  <ShieldCheck /> Super administrator
+                </Badge>
+                <Separator className="my-5" />
+                <div className="w-full space-y-3 text-left text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Account status</span>
+                    <strong className="text-emerald-700">Active</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Last sign-in</span>
+                    <strong>Today, 08:42</strong>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Member since</span>
+                    <strong>Jan 2024</strong>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <div className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Personal information</CardTitle>
+                  <CardDescription>
+                    Details associated with your administrator account
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="grid gap-4 sm:grid-cols-2">
+                  <SettingField label="Full name" defaultValue="Sophia Admin" />
+                  <SettingField
+                    label="Work email"
+                    defaultValue="sophia@certilearn.com"
+                  />
+                  <SettingField
+                    label="Phone number"
+                    defaultValue="+1 415 555 0142"
+                  />
+                  <SettingField
+                    label="Job title"
+                    defaultValue="Platform administrator"
+                  />
+                  <SettingField
+                    label="Preferred language"
+                    defaultValue="English"
+                  />
+                  <SettingField
+                    label="Time zone"
+                    defaultValue="Asia/Phnom_Penh"
+                  />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Administrator role</CardTitle>
+                  <CardDescription>
+                    Access level is managed by another super administrator
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between rounded-xl border p-4">
+                    <div className="flex items-center gap-3">
+                      <span className="grid size-10 place-items-center rounded-lg bg-emerald-50 text-emerald-700">
+                        <ShieldCheck className="size-5" />
+                      </span>
+                      <div>
+                        <p className="text-sm font-medium">
+                          Super administrator
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          Full access to all modules, settings, and team
+                          permissions
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant="outline">Full access</Badge>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </TabsContent>
+        <TabsContent value="security">
+          <div className="grid gap-4 xl:grid-cols-[1fr_360px]">
+            <Card>
+              <CardHeader>
+                <CardTitle>Sign-in security</CardTitle>
+                <CardDescription>
+                  Protect your high-privilege administrator account
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="divide-y">
+                <SettingToggle
+                  title="Two-factor authentication"
+                  description="Required when signing in from a new device"
+                  defaultChecked
+                />
+                <SettingToggle
+                  title="New device alerts"
+                  description="Email a warning when an unfamiliar device signs in"
+                  defaultChecked
+                />
+                <SettingToggle
+                  title="Sensitive action confirmation"
+                  description="Request password confirmation before refunds and role changes"
+                  defaultChecked
+                />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>Password</CardTitle>
+                <CardDescription>Last updated 42 days ago</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <SettingField
+                  label="Current password"
+                  defaultValue="••••••••••••"
+                />
+                <SettingField label="New password" defaultValue="" />
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => notify("Admin password updated — UI demo")}
+                >
+                  Update password
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+          <Card className="mt-4 border-amber-200 bg-amber-50/40">
+            <CardContent className="flex flex-col justify-between gap-4 pt-5 sm:flex-row sm:items-center">
+              <div>
+                <p className="text-sm font-medium">Recovery codes</p>
+                <p className="mt-1 text-xs text-slate-500">
+                  Generate a new set if your existing recovery codes are
+                  unavailable.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => notify("New recovery codes generated")}
+              >
+                Generate new codes
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="sessions">
+          <Card>
+            <CardHeader>
+              <CardTitle>Active sessions</CardTitle>
+              <CardDescription>
+                Devices currently signed into your administrator account
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {[
+                [
+                  "Chrome on Linux",
+                  "Phnom Penh, Cambodia",
+                  "Current session · Active now",
+                ],
+                [
+                  "Safari on iPhone",
+                  "Phnom Penh, Cambodia",
+                  "Last active 2 hours ago",
+                ],
+                ["Chrome on macOS", "Paris, France", "Last active July 17"],
+              ].map(([device, location, status], index) => (
+                <div
+                  key={device}
+                  className="flex flex-col justify-between gap-3 rounded-xl border p-4 sm:flex-row sm:items-center"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="grid size-10 place-items-center rounded-lg bg-slate-100 text-slate-600">
+                      <Globe2 className="size-5" />
+                    </span>
+                    <div>
+                      <p className="text-sm font-medium">{device}</p>
+                      <p className="text-xs text-slate-500">
+                        {location} · {status}
+                      </p>
+                    </div>
+                  </div>
+                  {index === 0 ? (
+                    <Badge className="bg-emerald-100 text-emerald-700">
+                      This device
+                    </Badge>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => notify(`${device} session revoked`)}
+                    >
+                      Revoke
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <Separator />
+              <Button
+                variant="outline"
+                className="text-rose-700"
+                onClick={() => notify("All other admin sessions revoked")}
+              >
+                Revoke all other sessions
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </>
   );
 }
 
