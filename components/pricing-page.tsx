@@ -250,6 +250,10 @@ function Plan({
   action: string;
   featured?: boolean;
 }) {
+  const actionHref =
+    name === "Free"
+      ? "/register"
+      : `/checkout?plan=${period === "year" ? "yearly" : "monthly"}`;
   return (
     <Card
       className={`relative shadow-xl shadow-slate-200/50 ${featured ? "border-emerald-400" : ""}`}
@@ -282,7 +286,7 @@ function Plan({
           variant={featured ? "default" : "outline"}
           className="mt-6 w-full"
         >
-          <Link href="/register">
+          <Link href={actionHref}>
             {action} <ArrowRight />
           </Link>
         </Button>
