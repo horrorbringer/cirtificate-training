@@ -777,7 +777,7 @@ export function AdminDashboard({
                   <Button
                     variant="ghost"
                     className="h-11 w-full rounded-none"
-                    onClick={() => notify("Admin notification history opened")}
+                    onClick={() => setActive("Admin Notifications")}
                   >
                     View notification history <ArrowRight />
                   </Button>
@@ -1328,6 +1328,8 @@ export function AdminDashboard({
                 }
                 notify={notify}
               />
+            ) : active === "Admin Notifications" ? (
+              <AdminNotificationHistory onSelect={setActive} notify={notify} />
             ) : (
               <AdminModulePreview active={active} notify={notify} />
             )}
@@ -4542,6 +4544,259 @@ function OutcomeRow({
         {change}
       </Badge>
     </div>
+  );
+}
+
+const adminNotificationRecords = [
+  {
+    id: 1,
+    title: "8 certificate requests pending",
+    description: "The oldest request has been waiting for two days.",
+    module: "Certificates",
+    severity: "Attention",
+    time: "12 min ago",
+    icon: Award,
+    unread: true,
+  },
+  {
+    id: 2,
+    title: "Payment failed for Nadia Rahman",
+    description: "The yearly membership has entered its five-day grace period.",
+    module: "Payments",
+    severity: "Critical",
+    time: "34 min ago",
+    icon: CreditCard,
+    unread: true,
+  },
+  {
+    id: 3,
+    title: "26 new members registered",
+    description: "Member registrations are 18% higher than the previous week.",
+    module: "Members",
+    severity: "Info",
+    time: "2 hours ago",
+    icon: Users,
+    unread: true,
+  },
+  {
+    id: 4,
+    title: "Maintenance notice scheduled",
+    description: "The announcement will publish on July 24 at 02:00 UTC.",
+    module: "Announcements",
+    severity: "Scheduled",
+    time: "Yesterday",
+    icon: Megaphone,
+    unread: true,
+  },
+  {
+    id: 5,
+    title: "Document storage reached 34%",
+    description: "8.4 GB of the current 25 GB allocation is in use.",
+    module: "Documents",
+    severity: "Info",
+    time: "July 18",
+    icon: HardDrive,
+    unread: false,
+  },
+  {
+    id: 6,
+    title: "Monthly revenue report ready",
+    description: "The July financial summary can now be exported.",
+    module: "Reports",
+    severity: "Info",
+    time: "July 17",
+    icon: BarChart3,
+    unread: false,
+  },
+];
+
+function AdminNotificationHistory({
+  onSelect,
+  notify,
+}: {
+  onSelect: (module: string) => void;
+  notify: (message: string) => void;
+}) {
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState("All");
+  const [readIds, setReadIds] = useState<number[]>(
+    adminNotificationRecords
+      .filter((item) => !item.unread)
+      .map((item) => item.id),
+  );
+  const rows = adminNotificationRecords.filter(
+    (item) =>
+      (filter === "All" ||
+        item.module === filter ||
+        item.severity === filter ||
+        (filter === "Unread" && !readIds.includes(item.id))) &&
+      `${item.title} ${item.description} ${item.module}`
+        .toLowerCase()
+        .includes(query.toLowerCase()),
+  );
+  return (
+    <>
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <Badge variant="secondary" className="mb-2 text-emerald-700">
+            Operations center
+          </Badge>
+          <h1 className="text-2xl font-semibold tracking-tight md:text-3xl">
+            Notification history
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Review operational alerts and jump directly to affected modules.
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          onClick={() => {
+            setReadIds(adminNotificationRecords.map((item) => item.id));
+            notify("All admin notifications marked as read");
+          }}
+        >
+          <CheckCircle2 /> Mark all read
+        </Button>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Card>
+          <CardContent className="flex items-center gap-4 pt-5">
+            <span className="grid size-10 place-items-center rounded-xl bg-rose-50 text-rose-700">
+              <Bell className="size-5" />
+            </span>
+            <div>
+              <strong className="text-2xl font-semibold">
+                {adminNotificationRecords.length - readIds.length}
+              </strong>
+              <p className="text-sm text-slate-500">Unread alerts</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center gap-4 pt-5">
+            <span className="grid size-10 place-items-center rounded-xl bg-amber-50 text-amber-700">
+              <Activity className="size-5" />
+            </span>
+            <div>
+              <strong className="text-2xl font-semibold">2</strong>
+              <p className="text-sm text-slate-500">Need attention</p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="flex items-center gap-4 pt-5">
+            <span className="grid size-10 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
+              <CheckCircle2 className="size-5" />
+            </span>
+            <div>
+              <strong className="text-2xl font-semibold">99.8%</strong>
+              <p className="text-sm text-slate-500">Platform health</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      <Card>
+        <CardHeader className="gap-4">
+          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+            <div>
+              <CardTitle>Operational alerts</CardTitle>
+              <CardDescription>
+                System and workflow notifications from across CertiLearn
+              </CardDescription>
+            </div>
+            <div className="relative w-full sm:w-72">
+              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                className="pl-9"
+                placeholder="Search notifications"
+              />
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {[
+              "All",
+              "Unread",
+              "Critical",
+              "Attention",
+              "Members",
+              "Payments",
+              "Certificates",
+              "Documents",
+            ].map((item) => (
+              <Button
+                key={item}
+                variant={filter === item ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilter(item)}
+              >
+                {item}
+                {item === "Unread" && (
+                  <Badge variant="secondary">
+                    {adminNotificationRecords.length - readIds.length}
+                  </Badge>
+                )}
+              </Button>
+            ))}
+          </div>
+        </CardHeader>
+        <CardContent className="divide-y p-0">
+          {rows.map((item) => {
+            const AlertIcon = item.icon;
+            const unread = !readIds.includes(item.id);
+            return (
+              <Button
+                key={item.id}
+                variant="ghost"
+                className={`h-auto w-full justify-start gap-4 rounded-none p-5 text-left ${unread ? "bg-emerald-50/30" : ""}`}
+                onClick={() => {
+                  setReadIds((current) => [...new Set([...current, item.id])]);
+                  onSelect(item.module);
+                  notify(`${item.module} opened from notification`);
+                }}
+              >
+                <span
+                  className={`grid size-10 shrink-0 place-items-center rounded-xl ${item.severity === "Critical" ? "bg-rose-50 text-rose-700" : item.severity === "Attention" ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}`}
+                >
+                  <AlertIcon className="size-5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-2">
+                    <strong className="text-sm font-medium">
+                      {item.title}
+                    </strong>
+                    {unread && (
+                      <i className="size-2 rounded-full bg-rose-500" />
+                    )}
+                  </span>
+                  <span className="mt-1 block whitespace-normal text-sm leading-6 text-slate-500">
+                    {item.description}
+                  </span>
+                  <span className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                    <Badge variant="secondary">{item.module}</Badge>
+                    <Badge variant="outline">{item.severity}</Badge>
+                    {item.time}
+                  </span>
+                </span>
+                <ArrowRight className="size-4 shrink-0 text-slate-400" />
+              </Button>
+            );
+          })}
+          {rows.length === 0 && (
+            <div className="py-16 text-center">
+              <Bell className="mx-auto size-6 text-slate-400" />
+              <p className="mt-2 text-sm font-medium">
+                No matching notifications
+              </p>
+              <p className="mt-1 text-xs text-slate-500">
+                Try another filter or search phrase.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </>
   );
 }
 
