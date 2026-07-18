@@ -14,3 +14,54 @@
     @apply bg-background text-foreground;}
   html {
     @apply font-sans;}}
+
+.admin-link {
+  display: flex;
+  height: 38px;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid #dfe5eb;
+  border-radius: 9px;
+  background: #fff;
+  padding: 0 13px;
+  color: var(--navy);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.admin-link:hover {
+  border-color: #9bd8ce;
+  background: #edf8f6;
+  color: var(--teal-dark);
+}
+
+.login-link {
+  border: 0;
+  background: transparent;
+  padding: 9px 5px;
+  color: var(--navy);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.register-link {
+  height: 38px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--teal);
+  padding: 0 14px;
+  color: white;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.register-link:hover {
+  background: var(--teal-dark);
+}
+
+@media (max-width: 860px) {
+  .login-link,
+  .register-link {
+    display: none;
+  }
+}

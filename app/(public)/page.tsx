@@ -45,6 +45,8 @@ export default function Home() {
   const goHome = () => { setView("home"); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const goDashboard = () => { setView("dashboard"); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const goAdmin = () => { window.location.assign("/admin"); };
+  const goLogin = () => { window.location.assign("/login"); };
+  const goRegister = () => { window.location.assign("/register"); };
   const goVerify = () => { setView("verify"); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const openCourse = (course: Course) => { setSelectedCourse(course); setView("course"); window.scrollTo({ top: 0, behavior: "smooth" }); };
 
@@ -60,12 +62,12 @@ export default function Home() {
           <button onClick={() => { goHome(); setTimeout(() => document.querySelector("#courses")?.scrollIntoView({ behavior: "smooth" }), 30); }}>Courses</button>
           <button onClick={() => { goHome(); setTimeout(() => document.querySelector("#plans")?.scrollIntoView({ behavior: "smooth" }), 30); }}>Plans</button>
           <button onClick={goVerify}>Verify certificate</button>
-          <button onClick={goAdmin}>Admin</button>
         </nav>
         <div className="header-actions">
           <button className="icon-btn" aria-label="Notifications" onClick={() => showToast("You have 3 new notifications")}><Bell size={19} /><i /></button>
-          <button className="avatar" onClick={goDashboard}>AM</button>
-          <button className="profile-trigger" onClick={goDashboard}><span>Amina Mensah<small>Premium member</small></span><ChevronDown size={15} /></button>
+          <button className="admin-link" onClick={goAdmin}><ShieldCheck size={16} /> Admin</button>
+          <button className="login-link" onClick={goLogin}>Log in</button>
+          <button className="register-link" onClick={goRegister}>Create account</button>
           <button className="menu-btn" onClick={() => setMobileOpen(!mobileOpen)}>{mobileOpen ? <X /> : <Menu />}</button>
         </div>
       </header>
