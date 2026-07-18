@@ -6,6 +6,7 @@ import {
   ListVideo, LockKeyhole, Maximize, Menu, Play, Search, ShieldCheck, Sparkles, Star, Users, Volume2, X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { AdminDashboard } from "@/components/admin-dashboard";
 
 type Course = {
   title: string; category: string; level: string; duration: string; lessons: number;
@@ -24,7 +25,7 @@ const courses: Course[] = [
 const categories = ["All courses", "Leadership", "Business", "Compliance", "Marketing"];
 
 export default function Home() {
-  const [view, setView] = useState<"home" | "dashboard" | "course">("home");
+  const [view, setView] = useState<"home" | "dashboard" | "course" | "admin">("home");
   const [selectedCourse, setSelectedCourse] = useState<Course>(courses[0]);
   const [activeCategory, setActiveCategory] = useState("All courses");
   const [query, setQuery] = useState("");
@@ -43,6 +44,7 @@ export default function Home() {
 
   const goHome = () => { setView("home"); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const goDashboard = () => { setView("dashboard"); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const goAdmin = () => { setView("admin"); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const openCourse = (course: Course) => { setSelectedCourse(course); setView("course"); window.scrollTo({ top: 0, behavior: "smooth" }); };
 
   return (
@@ -57,6 +59,7 @@ export default function Home() {
           <button onClick={() => { goHome(); setTimeout(() => document.querySelector("#courses")?.scrollIntoView({ behavior: "smooth" }), 30); }}>Courses</button>
           <button onClick={() => { goHome(); setTimeout(() => document.querySelector("#plans")?.scrollIntoView({ behavior: "smooth" }), 30); }}>Plans</button>
           <button onClick={() => showToast("Certificate #CL-2026-1842 is valid ✓")}>Verify certificate</button>
+          <button onClick={goAdmin}>Admin</button>
         </nav>
         <div className="header-actions">
           <button className="icon-btn" aria-label="Notifications" onClick={() => showToast("You have 3 new notifications")}><Bell size={19} /><i /></button>
@@ -127,7 +130,7 @@ export default function Home() {
 
           <footer><div className="brand footer-brand"><span className="brand-mark"><GraduationCap size={22} /></span><span>Certi<span>Learn</span></span></div><p>Learning without borders. Recognition without limits.</p><div><button>About</button><button>Support</button><button>Privacy</button><button>Terms</button></div><small>© 2026 CertiLearn. UI concept only.</small></footer>
         </>
-      ) : view === "dashboard" ? <Dashboard onBrowse={goHome} showToast={showToast} /> : <CourseDetail course={selectedCourse} onBack={goHome} showToast={showToast} />}
+      ) : view === "dashboard" ? <Dashboard onBrowse={goHome} showToast={showToast} /> : view === "course" ? <CourseDetail course={selectedCourse} onBack={goHome} showToast={showToast} /> : <AdminDashboard onExit={goHome} notify={showToast} />}
 
       {toast && <div className="toast"><Check size={17} />{toast}</div>}
     </main>
