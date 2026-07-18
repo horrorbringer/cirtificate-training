@@ -3,10 +3,10 @@
 import {
   Activity, ArrowDownRight, ArrowUpRight, Award, Bell, BookOpen, ChevronDown,
   CircleDollarSign, FileText, GraduationCap, LayoutDashboard, Megaphone, Menu,
-  Archive, BadgeCheck, CalendarClock, CheckCircle2, CreditCard, Download, Eye,
-  FileSpreadsheet, FileUp, Filter, HardDrive, Mail, MoreHorizontal, Pencil,
-  Plus, ReceiptText, RefreshCw, RotateCcw, Search, Settings, ShieldCheck,
-  UserCheck, Users, UserX, WalletCards, X,
+  Archive, BadgeCheck, CalendarClock, CheckCircle2, Clock3, Copy, CreditCard,
+  Download, Eye, FileSpreadsheet, FileUp, Filter, Globe2, HardDrive, Mail,
+  MoreHorizontal, Pencil, Pin, Plus, ReceiptText, RefreshCw, RotateCcw, Search,
+  Send, Settings, ShieldCheck, UserCheck, Users, UserX, WalletCards, X,
 } from "lucide-react"
 import { useState } from "react"
 
@@ -24,6 +24,7 @@ import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
 
 const nav = [
   ["Overview", LayoutDashboard], ["Members", Users], ["Courses", BookOpen],
@@ -83,6 +84,13 @@ const adminCertificateRequests = [
   { id: "CERT-2082", member: "Diego Alvarez", course: "Data Analysis with Excel", progress: "100%", score: "81%", status: "Requested", requested: "Jul 18, 2026", country: "Mexico" },
   { id: "CERT-2081", member: "Nadia Rahman", course: "Project Management Foundations", progress: "94%", score: "—", status: "Needs action", requested: "Jul 18, 2026", country: "Malaysia" },
   { id: "CERT-2080", member: "James Okafor", course: "Effective Team Leadership", progress: "100%", score: "95%", status: "Approved", requested: "Jul 17, 2026", country: "Nigeria" },
+] as const
+
+const adminAnnouncements = [
+  { title: "New Data Analysis course is now available", excerpt: "Premium members can now access all eight modules, templates, and the final assessment.", audience: "Paid members", status: "Published", channel: "In-app + Email", date: "Jul 19, 2026 · 09:00", views: "3,842", author: "Sophia Admin", pinned: true },
+  { title: "Scheduled maintenance on July 24", excerpt: "The learning portal will be read-only for approximately 30 minutes during infrastructure maintenance.", audience: "All members", status: "Scheduled", channel: "In-app", date: "Jul 24, 2026 · 02:00", views: "—", author: "Sophia Admin", pinned: false },
+  { title: "Certificate review turnaround update", excerpt: "Most certificate requests are now reviewed within two business days.", audience: "Paid members", status: "Published", channel: "In-app + Email", date: "Jul 16, 2026 · 11:30", views: "2,176", author: "Sophia Admin", pinned: false },
+  { title: "Welcome guide for new learners", excerpt: "A short onboarding message covering courses, downloads, progress, and membership options.", audience: "New members", status: "Draft", channel: "In-app", date: "Updated Jul 15, 2026", views: "—", author: "Content team", pinned: false },
 ] as const
 
 export function AdminDashboard({ onExit, notify }: { onExit: () => void; notify: (message: string) => void }) {
@@ -166,7 +174,7 @@ export function AdminDashboard({ onExit, notify }: { onExit: () => void; notify:
               </TabsContent>
               <TabsContent value="certificates"><Card><CardHeader><CardTitle>Certificate requests</CardTitle><CardDescription>Review eligibility before approving certificates</CardDescription></CardHeader><CardContent className="space-y-3">{certificates.map(([name, course, status, time])=><div key={name} className="flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center"><span className="grid size-10 place-items-center rounded-lg bg-amber-50 text-amber-600"><Award /></span><div className="flex-1"><p className="text-sm font-semibold">{name}</p><p className="text-xs text-slate-500">{course} · {time}</p></div><Badge variant="outline">{status}</Badge><Button size="sm" onClick={() => notify(`${name}'s eligibility review opened`)}>Review</Button></div>)}</CardContent></Card></TabsContent>
             </Tabs>
-            </> : active === "Members" ? <AdminMembersWorkspace notify={notify} /> : active === "Courses" ? <AdminCoursesWorkspace notify={notify} /> : active === "Documents" ? <AdminDocumentsWorkspace notify={notify} /> : active === "Subscriptions" ? <AdminSubscriptionsWorkspace notify={notify} /> : active === "Payments" ? <AdminPaymentsWorkspace notify={notify} /> : active === "Certificates" ? <AdminCertificatesWorkspace notify={notify} /> : <AdminModulePreview active={active} notify={notify} />}
+            </> : active === "Members" ? <AdminMembersWorkspace notify={notify} /> : active === "Courses" ? <AdminCoursesWorkspace notify={notify} /> : active === "Documents" ? <AdminDocumentsWorkspace notify={notify} /> : active === "Subscriptions" ? <AdminSubscriptionsWorkspace notify={notify} /> : active === "Payments" ? <AdminPaymentsWorkspace notify={notify} /> : active === "Certificates" ? <AdminCertificatesWorkspace notify={notify} /> : active === "Announcements" ? <AdminAnnouncementsWorkspace notify={notify} /> : <AdminModulePreview active={active} notify={notify} />}
           </div>
         </main>
       </div>
@@ -325,6 +333,28 @@ function CertificateSummary({ label, value, note, icon: Icon, warning = false }:
 
 function CertificateRowMenu({ request, notify }: { request: string; notify: (message: string) => void }) {
   return <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal /></Button></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem onClick={() => notify(`${request} review opened`)}><Eye /> Review eligibility</DropdownMenuItem><DropdownMenuItem onClick={() => notify(`${request} approved and credential previewed`)}><CheckCircle2 /> Approve and issue</DropdownMenuItem><DropdownMenuItem onClick={() => notify(`${request} upload panel opened`)}><FileUp /> Upload certificate</DropdownMenuItem><DropdownMenuItem onClick={() => notify(`${request} information request opened`)}><Mail /> Request information</DropdownMenuItem><DropdownMenuSeparator /><DropdownMenuItem variant="destructive" onClick={() => notify(`${request} rejection confirmation opened`)}><X /> Reject request</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
+}
+
+function AdminAnnouncementsWorkspace({ notify }: { notify: (message: string) => void }) {
+  const [query, setQuery] = useState("")
+  const [status, setStatus] = useState("All statuses")
+  const [audience, setAudience] = useState("All audiences")
+  const rows = adminAnnouncements.filter(announcement => (status === "All statuses" || announcement.status === status) && (audience === "All audiences" || announcement.audience === audience) && `${announcement.title} ${announcement.excerpt} ${announcement.author}`.toLowerCase().includes(query.toLowerCase()))
+
+  return <>
+    <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><Badge variant="secondary" className="mb-2 text-emerald-700">Member communication</Badge><h1 className="text-2xl font-semibold tracking-tight md:text-3xl">Announcements</h1><p className="mt-1 text-sm text-slate-500">Create targeted updates and schedule messages across member channels.</p></div><div className="flex gap-2"><Button variant="outline" onClick={() => notify("Announcement templates opened")}><Copy /> Templates</Button><Button className="bg-emerald-600 hover:bg-emerald-700" onClick={() => notify("Announcement composer opened")}><Plus /> New announcement</Button></div></div>
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><AnnouncementSummary label="Published" value="48" note="6 this month" icon={Send} /><AnnouncementSummary label="Scheduled" value="3" note="Next: July 24" icon={Clock3} warning /><AnnouncementSummary label="Total reach" value="18.4k" note="Across all channels" icon={Users} /><AnnouncementSummary label="Open rate" value="64.8%" note="Email announcements" icon={Eye} /></div>
+    <div className="grid gap-4 xl:grid-cols-[1fr_340px]"><Card><CardHeader><CardTitle>Quick announcement</CardTitle><CardDescription>Draft a short in-app update for members</CardDescription></CardHeader><CardContent className="space-y-4"><Input placeholder="Announcement title" /><Textarea className="min-h-28 resize-none" placeholder="Write your announcement message…" /><div className="flex flex-col justify-between gap-3 sm:flex-row"><div className="flex gap-2"><FilterMenu label="All members" options={["All members", "Paid members", "Free members", "New members"]} onSelect={() => notify("Composer audience updated")} /><FilterMenu label="In-app" options={["In-app", "Email", "In-app + Email"]} onSelect={() => notify("Composer channel updated")} /></div><div className="flex gap-2"><Button variant="outline" onClick={() => notify("Announcement saved as draft")}>Save draft</Button><Button onClick={() => notify("Announcement preview opened")}><Eye /> Preview</Button></div></div></CardContent></Card><Card className="border-0 bg-slate-900 text-white"><CardHeader><CardTitle className="text-white">Communication health</CardTitle><CardDescription className="text-slate-400">Last 30 days</CardDescription></CardHeader><CardContent className="space-y-5"><div><div className="mb-2 flex justify-between text-sm"><span className="text-slate-300">Delivered</span><strong>98.7%</strong></div><Progress value={98.7} className="bg-white/10 [&>div]:bg-emerald-400" /></div><div><div className="mb-2 flex justify-between text-sm"><span className="text-slate-300">Opened</span><strong>64.8%</strong></div><Progress value={64.8} className="bg-white/10 [&>div]:bg-sky-400" /></div><div><div className="mb-2 flex justify-between text-sm"><span className="text-slate-300">Clicked</span><strong>22.4%</strong></div><Progress value={22.4} className="bg-white/10 [&>div]:bg-amber-400" /></div><Separator className="bg-white/10" /><p className="text-xs leading-5 text-slate-400">Email and in-app announcements are measured separately in the production analytics view.</p></CardContent></Card></div>
+    <Card><CardHeader className="gap-4"><div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center"><div><CardTitle>Announcement history</CardTitle><CardDescription>Published, scheduled, and draft member messages</CardDescription></div><Badge variant="outline">54 total</Badge></div><div className="flex flex-col gap-2 lg:flex-row"><div className="relative flex-1"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" /><Input value={query} onChange={event => setQuery(event.target.value)} className="pl-9" placeholder="Search announcements or author" /></div><FilterMenu label={audience} options={["All audiences", "All members", "Paid members", "New members"]} onSelect={setAudience} /><FilterMenu label={status} options={["All statuses", "Published", "Scheduled", "Draft"]} onSelect={setStatus} /></div></CardHeader><CardContent className="space-y-3">{rows.map(announcement => <div key={announcement.title} className="flex flex-col gap-4 rounded-xl border p-4 transition-colors hover:bg-slate-50 lg:flex-row lg:items-center"><span className={`grid size-11 shrink-0 place-items-center rounded-xl ${announcement.status === "Published" ? "bg-emerald-50 text-emerald-700" : announcement.status === "Scheduled" ? "bg-amber-50 text-amber-700" : "bg-slate-100 text-slate-600"}`}>{announcement.pinned ? <Pin className="size-5" /> : announcement.status === "Scheduled" ? <Clock3 className="size-5" /> : <Megaphone className="size-5" />}</span><div className="min-w-0 flex-1"><div className="mb-1 flex flex-wrap items-center gap-2"><h3 className="text-sm font-semibold">{announcement.title}</h3>{announcement.pinned && <Badge variant="secondary">Pinned</Badge>}</div><p className="text-sm leading-6 text-slate-500">{announcement.excerpt}</p><div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400"><span>{announcement.author}</span><span>{announcement.date}</span><span>{announcement.channel}</span></div></div><div className="flex items-center gap-2 lg:flex-col lg:items-end"><Badge className={announcement.status === "Published" ? "bg-emerald-100 text-emerald-700" : announcement.status === "Scheduled" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600"}>{announcement.status}</Badge><Badge variant="outline"><Globe2 /> {announcement.audience}</Badge>{announcement.views !== "—" && <small className="text-xs text-slate-400">{announcement.views} views</small>}</div><AnnouncementRowMenu title={announcement.title} notify={notify} /></div>)}{rows.length === 0 && <div className="py-14 text-center"><Megaphone className="mx-auto mb-2 size-6 text-slate-400" /><p className="text-sm font-medium">No matching announcements</p><p className="text-xs text-slate-500">Try another audience, status, or search.</p><Button variant="link" size="sm" onClick={() => { setQuery(""); setAudience("All audiences"); setStatus("All statuses"); }}>Clear filters</Button></div>}</CardContent></Card>
+  </>
+}
+
+function AnnouncementSummary({ label, value, note, icon: Icon, warning = false }: { label: string; value: string; note: string; icon: typeof Users; warning?: boolean }) {
+  return <Card><CardContent className="flex items-center gap-4 pt-5"><span className={`grid size-11 place-items-center rounded-xl ${warning ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}`}><Icon className="size-5" /></span><div><strong className="text-2xl font-semibold">{value}</strong><p className="text-sm text-slate-700">{label}</p><small className="text-xs text-slate-400">{note}</small></div></CardContent></Card>
+}
+
+function AnnouncementRowMenu({ title, notify }: { title: string; notify: (message: string) => void }) {
+  return <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal /></Button></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem onClick={() => notify(`${title} preview opened`)}><Eye /> Preview</DropdownMenuItem><DropdownMenuItem onClick={() => notify(`${title} editor opened`)}><Pencil /> Edit</DropdownMenuItem><DropdownMenuItem onClick={() => notify(`${title} duplicated as draft`)}><Copy /> Duplicate</DropdownMenuItem><DropdownMenuItem onClick={() => notify(`${title} schedule editor opened`)}><CalendarClock /> Reschedule</DropdownMenuItem><DropdownMenuSeparator /><DropdownMenuItem variant="destructive" onClick={() => notify(`${title} archive confirmation opened`)}><Archive /> Archive</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
 }
 
 function MemberSummary({ label, value, note, icon: Icon, warning = false }: { label: string; value: string; note: string; icon: typeof Users; warning?: boolean }) {
