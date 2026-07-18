@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 const links = [
   ["Home", "/"],
   ["Courses", "/courses"],
+  ["Resources", "/resources"],
   ["Pricing", "/pricing"],
   ["Verify", "/verify-certificate"],
   ["Announcements", "/announcements"],
@@ -39,7 +40,7 @@ export function PublicNavbar() {
             Certi<span className="text-emerald-600">Learn</span>
           </strong>
         </Link>
-        <nav className="hidden items-center gap-1 lg:flex">
+        <nav className="hidden items-center gap-1 xl:flex">
           {links.map(([label, href]) => (
             <Button
               key={href}
@@ -66,7 +67,7 @@ export function PublicNavbar() {
         <Button
           variant="ghost"
           size="icon"
-          className="ml-auto lg:hidden"
+          className="ml-auto xl:hidden"
           onClick={() => setOpen(!open)}
           aria-label={open ? "Close navigation" : "Open navigation"}
         >
@@ -74,7 +75,7 @@ export function PublicNavbar() {
         </Button>
       </div>
       {open && (
-        <div className="border-t bg-white px-5 py-4 shadow-lg lg:hidden">
+        <div className="border-t bg-white px-5 py-4 shadow-lg xl:hidden">
           <nav className="mx-auto grid max-w-7xl gap-1">
             {links.map(([label, href]) => (
               <Button
