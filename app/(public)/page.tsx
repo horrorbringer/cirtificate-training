@@ -6,6 +6,7 @@ import {
   Award,
   Bell,
   BookOpen,
+  Captions,
   Check,
   CheckCircle2,
   ChevronDown,
@@ -21,6 +22,7 @@ import {
   LockKeyhole,
   Maximize,
   Menu,
+  Pause,
   Play,
   Search,
   ShieldCheck,
@@ -670,6 +672,16 @@ export function CourseDetail({
 
       <section className="course-detail-body">
         <div className="course-main-column">
+          {activeLesson && activeLesson !== "Welcome & course roadmap" && (
+            <InlineLessonPlayer
+              title={activeLesson}
+              onClose={() => setActiveLesson("Welcome & course roadmap")}
+              onComplete={() => {
+                showToast("Lesson marked complete — great work!");
+                setTab("curriculum");
+              }}
+            />
+          )}
           <div className="detail-tabs">
             <button
               className={tab === "overview" ? "active" : ""}
@@ -838,14 +850,6 @@ export function CourseDetail({
           </div>
         </aside>
       </section>
-
-      {activeLesson && activeLesson !== "Welcome & course roadmap" && (
-        <LessonPlayer
-          title={activeLesson}
-          onClose={() => setActiveLesson("Welcome & course roadmap")}
-          onComplete={() => showToast("Lesson marked complete — great work!")}
-        />
-      )}
     </div>
   );
 }
@@ -929,7 +933,7 @@ function Curriculum({
   );
 }
 
-function LessonPlayer({
+function InlineLessonPlayer({
   title,
   onClose,
   onComplete,
@@ -938,49 +942,105 @@ function LessonPlayer({
   onClose: () => void;
   onComplete: () => void;
 }) {
+  const [playing, setPlaying] = useState(false);
+  const [captions, setCaptions] = useState(true);
+  const [position, setPosition] = useState(18);
+  const elapsedSeconds = Math.round((position / 100) * 760);
+
   return (
-    <div className="player-overlay">
-      <div className="player-modal">
-        <div className="player-top">
-          <div>
-            <small>PROJECT MANAGEMENT FOUNDATIONS</small>
-            <strong>{title}</strong>
-          </div>
-          <button onClick={onClose}>
-            <X />
-          </button>
+    <div className="border-b bg-slate-950 text-white">
+      <div className="flex items-center justify-between gap-4 border-b border-white/10 px-4 py-3 md:px-5">
+        <div className="min-w-0">
+          <p className="text-[10px] font-semibold uppercase tracking-[.12em] text-emerald-400">
+            Now learning · Lesson 2 of 12
+          </p>
+          <h2 className="mt-1 truncate text-sm font-medium text-white">
+            {title}
+          </h2>
         </div>
-        <div className="video-stage">
-          <div className="video-symbol">
-            <Play fill="currentColor" />
-          </div>
-          <div className="video-caption">Interactive video preview</div>
-          <div className="video-controls">
-            <button>
-              <Play fill="currentColor" />
+        <button
+          className="grid size-8 shrink-0 place-items-center rounded-full bg-white/10 text-slate-300 hover:bg-white/15 hover:text-white"
+          onClick={onClose}
+          aria-label="Close lesson player"
+        >
+          <X className="size-4" />
+        </button>
+      </div>
+      <div className="relative grid aspect-video max-h-[520px] place-items-center overflow-hidden bg-[radial-gradient(circle_at_50%_35%,#29445e,#081521_70%)]">
+        <div className="absolute inset-0 opacity-25 [background-image:linear-gradient(rgba(255,255,255,.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.06)_1px,transparent_1px)] [background-size:48px_48px]" />
+        <button
+          className="relative grid size-16 place-items-center rounded-full bg-emerald-500 text-white shadow-[0_0_0_12px_rgba(255,255,255,.08)] transition hover:scale-105 hover:bg-emerald-400"
+          onClick={() => setPlaying(!playing)}
+          aria-label={playing ? "Pause lesson" : "Play lesson"}
+        >
+          {playing ? (
+            <Pause className="size-6" fill="currentColor" />
+          ) : (
+            <Play className="ml-1 size-6" fill="currentColor" />
+          )}
+        </button>
+        {captions && playing && (
+          <p className="absolute bottom-20 rounded bg-black/75 px-3 py-1.5 text-xs">
+            Welcome—let&apos;s turn the course concepts into practical action.
+          </p>
+        )}
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent px-4 pb-3 pt-12">
+          <input
+            aria-label="Video position"
+            type="range"
+            min="0"
+            max="100"
+            value={position}
+            onChange={(event) => setPosition(Number(event.target.value))}
+            className="h-1.5 w-full cursor-pointer accent-emerald-400"
+          />
+          <div className="mt-2 flex items-center gap-2 text-[10px] text-slate-300">
+            <button
+              className="grid size-7 place-items-center rounded hover:bg-white/10"
+              onClick={() => setPlaying(!playing)}
+            >
+              {playing ? (
+                <Pause className="size-4" />
+              ) : (
+                <Play className="size-4" />
+              )}
             </button>
-            <span>02:18</span>
-            <i>
-              <b />
-            </i>
-            <span>12:40</span>
-            <button>
-              <Volume2 />
+            <Volume2 className="size-4" />
+            <span>
+              {Math.floor(elapsedSeconds / 60)}:
+              {String(elapsedSeconds % 60).padStart(2, "0")} / 12:40
+            </span>
+            <span className="ml-auto hidden sm:inline">HD</span>
+            <button
+              className={`grid size-7 place-items-center rounded ${captions ? "bg-white/15 text-white" : "hover:bg-white/10"}`}
+              onClick={() => setCaptions(!captions)}
+              aria-label="Toggle captions"
+            >
+              <Captions className="size-4" />
             </button>
-            <button>
-              <Maximize />
+            <button
+              className="grid size-7 place-items-center rounded hover:bg-white/10"
+              onClick={() => document.documentElement.requestFullscreen?.()}
+              aria-label="Fullscreen preview"
+            >
+              <Maximize className="size-4" />
             </button>
           </div>
         </div>
-        <div className="player-bottom">
-          <div>
-            <span>Lesson 2 of 12</span>
-            <p>Use this mock player to preview the learner experience.</p>
-          </div>
-          <button onClick={onComplete}>
-            Mark complete <Check />
-          </button>
+      </div>
+      <div className="flex flex-col justify-between gap-3 bg-white px-4 py-4 text-slate-950 sm:flex-row sm:items-center md:px-5">
+        <div>
+          <p className="text-sm font-medium">Continue at your pace</p>
+          <p className="mt-1 text-xs text-slate-500">
+            Your progress is saved automatically in this UI demo.
+          </p>
         </div>
+        <button
+          className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 text-xs font-medium text-white hover:bg-emerald-700"
+          onClick={onComplete}
+        >
+          <Check className="size-4" /> Mark complete
+        </button>
       </div>
     </div>
   );
