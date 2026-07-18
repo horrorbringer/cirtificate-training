@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  ArrowLeft,
   Award,
   CalendarDays,
   Check,
@@ -13,6 +12,7 @@ import {
   Search,
   ShieldCheck,
   UserRound,
+  X,
   XCircle,
 } from "lucide-react";
 import { useState } from "react";
@@ -26,13 +26,11 @@ import { Separator } from "@/components/ui/separator";
 const validIds = ["CL-2026-1842", "CL-2026-0914"];
 
 export function CertificateVerification({
-  onBack,
   notify,
 }: {
-  onBack: () => void;
   notify: (message: string) => void;
 }) {
-  const [certificateId, setCertificateId] = useState("CL-2026-1842");
+  const [certificateId, setCertificateId] = useState("");
   const [result, setResult] = useState<"idle" | "valid" | "invalid">("idle");
 
   const verify = () => {
@@ -44,64 +42,85 @@ export function CertificateVerification({
   };
 
   return (
-    <div className="min-h-[calc(100vh-78px)] bg-[#f5f8fb] text-slate-950">
-      <section className="relative overflow-hidden bg-[#102a43] px-5 pb-28 pt-10 text-white md:px-10 md:pb-36 md:pt-14">
+    <div className="min-h-[calc(100vh-64px)] bg-[#f5f8fb] text-slate-950">
+      <section className="relative overflow-hidden bg-[#102a43] px-5 pb-28 pt-14 text-white md:px-10 md:pb-36 md:pt-20">
         <div className="absolute -left-28 top-20 size-72 rounded-full border-[55px] border-white/[.035]" />
         <div className="absolute -right-16 -top-24 size-80 rounded-full bg-emerald-400/[.06]" />
         <div className="relative mx-auto max-w-5xl">
-          <Button
-            variant="ghost"
-            className="mb-10 -ml-3 text-slate-300 hover:bg-white/10 hover:text-white"
-            onClick={onBack}
-          >
-            <ArrowLeft /> Back to website
-          </Button>
           <div className="mx-auto max-w-2xl text-center">
             <Badge className="mb-5 border border-emerald-300/20 bg-emerald-400/10 text-emerald-300">
               <ShieldCheck /> Secure credential verification
             </Badge>
-            <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
+            <h1 className="text-4xl font-semibold tracking-tight md:text-5xl">
               Verify a certificate
             </h1>
             <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-slate-300 md:text-base">
               Confirm that a CertiLearn credential is authentic, active, and
               issued to the person presenting it.
             </p>
-            <div className="mx-auto mt-8 flex max-w-xl flex-col gap-2 rounded-xl bg-white p-2 shadow-2xl shadow-slate-950/25 sm:flex-row">
+            <div className="mx-auto mt-8 flex max-w-xl flex-col gap-2 rounded-2xl bg-white p-2 shadow-2xl shadow-slate-950/25 sm:flex-row">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                <label htmlFor="certificate-id" className="sr-only">
+                  Certificate ID
+                </label>
                 <Input
+                  id="certificate-id"
                   value={certificateId}
-                  onChange={(e) => setCertificateId(e.target.value)}
+                  onChange={(event) => {
+                    setCertificateId(event.target.value.toUpperCase());
+                    if (result !== "idle") setResult("idle");
+                  }}
                   onKeyDown={(e) => e.key === "Enter" && verify()}
-                  className="h-11 border-0 pl-10 text-sm shadow-none focus-visible:ring-0"
-                  placeholder="Enter certificate ID"
+                  autoComplete="off"
+                  className="h-11 border-0 bg-white pl-10 pr-9 text-sm font-medium tracking-[.08em] text-slate-950 caret-emerald-600 shadow-none placeholder:font-normal placeholder:tracking-normal placeholder:text-slate-400 focus-visible:ring-0"
+                  placeholder="Enter ID, e.g. CL-2026-1842"
                 />
+                {certificateId && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCertificateId("");
+                      setResult("idle");
+                    }}
+                    className="absolute right-2 top-1/2 grid size-7 -translate-y-1/2 place-items-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                    aria-label="Clear certificate ID"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                )}
               </div>
               <Button
                 onClick={verify}
+                disabled={!certificateId.trim()}
                 className="h-11 bg-emerald-600 px-6 hover:bg-emerald-700"
               >
                 Verify certificate
               </Button>
             </div>
-            <p className="mt-3 text-[11px] text-slate-400">
-              Try the demo ID{" "}
-              <button
-                className="font-semibold text-emerald-300 underline-offset-2 hover:underline"
-                onClick={() => {
-                  setCertificateId("CL-2026-1842");
-                  setResult("valid");
-                }}
-              >
-                CL-2026-1842
-              </button>
-            </p>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-[11px] text-slate-400">
+              <span>Try a demo:</span>
+              {validIds.map((id) => (
+                <button
+                  key={id}
+                  className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 font-medium text-emerald-300 transition hover:bg-white/10"
+                  onClick={() => {
+                    setCertificateId(id);
+                    setResult("valid");
+                  }}
+                >
+                  {id}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="relative mx-auto -mt-20 max-w-5xl px-4 pb-20 md:-mt-24">
+      <section
+        aria-live="polite"
+        className="relative mx-auto -mt-20 max-w-5xl px-4 pb-20 md:-mt-24"
+      >
         {result === "idle" && <EmptyVerification />}
         {result === "invalid" && (
           <InvalidVerification
@@ -142,7 +161,7 @@ function EmptyVerification() {
         <span className="mx-auto grid size-16 place-items-center rounded-2xl bg-emerald-50 text-emerald-600">
           <Award className="size-8" />
         </span>
-        <h2 className="mt-5 text-xl font-bold">
+        <h2 className="mt-5 text-xl font-semibold">
           Enter a certificate ID to begin
         </h2>
         <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
@@ -170,14 +189,13 @@ function InvalidVerification({
         <Badge className="mt-5 bg-rose-100 text-rose-700">
           No valid record found
         </Badge>
-        <h2 className="mt-3 text-2xl font-bold">
+        <h2 className="mt-3 text-2xl font-semibold">
           We couldn&apos;t verify this certificate
         </h2>
         <p className="mx-auto mt-2 max-w-lg text-sm leading-6 text-slate-500">
           No active credential matches{" "}
           <strong className="text-slate-700">{id || "this ID"}</strong>. Check
           every character, or ask the certificate holder for the original
-          verification link.
         </p>
         <Button variant="outline" className="mt-6" onClick={onRetry}>
           Try another ID
@@ -226,10 +244,10 @@ function ValidVerification({ notify }: { notify: (message: string) => void }) {
         </div>
         <CardContent className="grid gap-8 p-6 md:grid-cols-[1fr_270px] md:p-8">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[.14em] text-emerald-600">
+            <p className="text-[10px] font-semibold uppercase tracking-[.14em] text-emerald-600">
               Professional certificate
             </p>
-            <h2 className="mt-2 text-2xl font-bold tracking-tight md:text-3xl">
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
               Project Management Foundations
             </h2>
             <p className="mt-2 text-sm text-slate-500">
