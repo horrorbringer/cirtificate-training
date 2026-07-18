@@ -25,7 +25,7 @@ const courses: Course[] = [
 const categories = ["All courses", "Leadership", "Business", "Compliance", "Marketing"];
 
 export default function Home() {
-  const [view, setView] = useState<"home" | "dashboard" | "course" | "verify">("home");
+  const [view, setView] = useState<"home" | "course" | "verify">("home");
   const [selectedCourse, setSelectedCourse] = useState<Course>(courses[0]);
   const [activeCategory, setActiveCategory] = useState("All courses");
   const [query, setQuery] = useState("");
@@ -43,7 +43,6 @@ export default function Home() {
   };
 
   const goHome = () => { setView("home"); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
-  const goDashboard = () => { setView("dashboard"); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const goAdmin = () => { window.location.assign("/admin"); };
   const goLogin = () => { window.location.assign("/login"); };
   const goRegister = () => { window.location.assign("/register"); };
@@ -133,7 +132,7 @@ export default function Home() {
 
           <footer><div className="brand footer-brand"><span className="brand-mark"><GraduationCap size={22} /></span><span>Certi<span>Learn</span></span></div><p>Learning without borders. Recognition without limits.</p><div><button>About</button><button>Support</button><button>Privacy</button><button>Terms</button></div><small>© 2026 CertiLearn. UI concept only.</small></footer>
         </>
-      ) : view === "dashboard" ? <Dashboard onBrowse={goHome} showToast={showToast} /> : view === "course" ? <CourseDetail course={selectedCourse} onBack={goHome} showToast={showToast} /> : <CertificateVerification onBack={goHome} notify={showToast} />}
+      ) : view === "course" ? <CourseDetail course={selectedCourse} onBack={goHome} showToast={showToast} /> : <CertificateVerification onBack={goHome} notify={showToast} />}
 
       {toast && <div className="toast"><Check size={17} />{toast}</div>}
     </main>
@@ -198,28 +197,4 @@ function Curriculum({ activeLesson, setActiveLesson }: { activeLesson: string; s
 
 function LessonPlayer({ title, onClose, onComplete }: { title: string; onClose: () => void; onComplete: () => void }) {
   return <div className="player-overlay"><div className="player-modal"><div className="player-top"><div><small>PROJECT MANAGEMENT FOUNDATIONS</small><strong>{title}</strong></div><button onClick={onClose}><X /></button></div><div className="video-stage"><div className="video-symbol"><Play fill="currentColor" /></div><div className="video-caption">Interactive video preview</div><div className="video-controls"><button><Play fill="currentColor" /></button><span>02:18</span><i><b /></i><span>12:40</span><button><Volume2 /></button><button><Maximize /></button></div></div><div className="player-bottom"><div><span>Lesson 2 of 12</span><p>Use this mock player to preview the learner experience.</p></div><button onClick={onComplete}>Mark complete <Check /></button></div></div></div>;
-}
-
-function Dashboard({ onBrowse, showToast }: { onBrowse: () => void; showToast: (m: string) => void }) {
-  return <div className="dashboard-shell">
-    <aside className="dashboard-sidebar"><div><small>MY LEARNING</small><button className="active"><LayoutDashboard /> Overview</button><button><BookOpen /> My courses <i>4</i></button><button><CirclePlay /> Continue learning</button><button><FileText /> Resources</button><button><Award /> Certificates <i>2</i></button></div><div><small>ACCOUNT</small><button><Users /> Profile</button><button><ShieldCheck /> Membership</button></div><div className="upgrade-card"><Sparkles /><strong>Premium active</strong><span>Renews Feb 18, 2027</span><button onClick={() => showToast("Membership settings opened")}>Manage plan</button></div></aside>
-    <section className="dashboard-content">
-      <div className="dash-title"><div><span>Saturday, July 18</span><h1>Welcome back, Amina 👋</h1><p>Keep going — you&apos;re making excellent progress.</p></div><button className="primary-btn" onClick={onBrowse}>Browse courses <ArrowRight /></button></div>
-      <div className="stats-row"><Stat icon={<Clock3 />} value="18.5h" label="Learning time" note="+2.5h this week" /><Stat icon={<BookOpen />} value="4" label="Courses enrolled" note="2 in progress" /><Stat icon={<Award />} value="2" label="Certificates" note="1 newly earned" /><Stat icon={<Download />} value="14" label="Resources saved" note="3 this month" /></div>
-      <div className="dash-grid">
-        <div className="continue-panel"><div className="panel-head"><div><h2>Continue learning</h2><p>Pick up right where you left off</p></div><button>View all <ArrowRight /></button></div><div className="continue-card"><div className="continue-art violet"><span>DA</span><button><Play fill="currentColor" /></button></div><div className="continue-info"><span>DATA & ANALYTICS</span><h3>Data Analysis with Excel</h3><p>Module 4 of 8 · Visualizing your data</p><div className="long-progress"><i style={{ width: "62%" }} /></div><small>62% complete <b>3h 10m left</b></small><button onClick={() => showToast("Lesson player opened")}>Continue lesson <Play fill="currentColor" /></button></div></div></div>
-        <div className="weekly-panel"><div className="panel-head"><div><h2>Weekly goal</h2><p>July 13–19</p></div><button>•••</button></div><div className="goal-ring"><div><strong>3.5</strong><small>of 5 hours</small></div></div><p>You&apos;re <strong>70%</strong> there. Just 1.5 hours to go!</p><div className="week-dots">{[1,1,1,1,0,0,0].map((on,i)=><span key={i} className={on ? "done" : ""}>{["M","T","W","T","F","S","S"][i]}</span>)}</div></div>
-        <div className="cert-panel"><div className="cert-icon"><Award /></div><div><span>NEW CERTIFICATE</span><h3>Project Management Foundations</h3><p>Issued July 12, 2026 · ID CL-2026-1842</p></div><button onClick={() => showToast("Certificate download ready")}>Download <Download /></button></div>
-        <div className="activity-panel"><div className="panel-head"><div><h2>Recent activity</h2><p>Your latest learning moments</p></div></div>{[
-          ["Completed a lesson", "Creating effective project timelines", "2 hours ago"],
-          ["Downloaded a resource", "Risk assessment template.pdf", "Yesterday"],
-          ["Earned a certificate", "Project Management Foundations", "July 12"],
-        ].map(([a,b,c],i)=><div className="activity" key={b}><span>{i===2?<Award />:i===1?<Download />:<Check />}</span><div><strong>{a}</strong><p>{b}</p></div><small>{c}</small></div>)}</div>
-      </div>
-    </section>
-  </div>;
-}
-
-function Stat({ icon, value, label, note }: { icon: React.ReactNode; value: string; label: string; note: string }) {
-  return <div className="stat-card"><span>{icon}</span><div><strong>{value}</strong><p>{label}</p><small>{note}</small></div></div>;
 }

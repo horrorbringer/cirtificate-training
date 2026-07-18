@@ -65,3 +65,95 @@
     display: none;
   }
 }
+
+.member-header {
+  position: sticky;
+  top: 0;
+  z-index: 45;
+  display: flex;
+  height: 72px;
+  align-items: center;
+  gap: 30px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, .96);
+  padding: 0 28px;
+  backdrop-filter: blur(14px);
+}
+
+.member-search {
+  position: relative;
+  display: flex;
+  width: min(360px, 35vw);
+  align-items: center;
+  margin-left: auto;
+  color: #8b95a5;
+}
+
+.member-search svg {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+}
+
+.member-search input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #f7f9fb;
+  padding: 10px 12px 10px 38px;
+  font-size: 11px;
+  outline: none;
+}
+
+.member-actions,
+.member-profile {
+  display: flex;
+  align-items: center;
+}
+
+.member-actions { gap: 9px; }
+
+.member-profile {
+  gap: 9px;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+
+.member-profile > span {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 50%;
+  background: #e2f3ef;
+  color: #08796b;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.member-profile div { display: flex; flex-direction: column; }
+.member-profile strong { font-size: 11px; }
+.member-profile small { color: #8a93a5; font-size: 8px; }
+.member-profile > svg { width: 13px; color: #8a93a5; }
+.member-menu { display: none; border: 0; background: none; }
+.member-shell { min-height: calc(100vh - 72px); }
+
+@media (max-width: 760px) {
+  .member-header { height: 64px; padding: 0 17px; }
+  .member-search, .member-profile div, .member-profile > svg { display: none; }
+  .member-actions { margin-left: auto; }
+  .member-menu { display: grid; place-items: center; }
+  .member-shell { min-height: calc(100vh - 64px); }
+  .member-sidebar {
+    position: fixed;
+    inset: 64px auto 0 0;
+    z-index: 40;
+    display: flex;
+    width: 245px;
+    transform: translateX(-100%);
+    transition: transform .2s ease;
+    box-shadow: 18px 0 35px rgba(15, 35, 55, .12);
+  }
+  .member-sidebar.open { transform: translateX(0); }
+}
