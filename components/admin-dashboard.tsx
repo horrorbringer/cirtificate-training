@@ -46,8 +46,8 @@ export function AdminDashboard({ onExit, notify }: { onExit: () => void; notify:
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="min-h-[calc(100vh-78px)] bg-slate-50 text-slate-950">
-      <div className="mx-auto grid min-h-[calc(100vh-78px)] max-w-[1600px] lg:grid-cols-[245px_1fr]">
+    <div className="min-h-screen bg-slate-50 text-slate-950">
+      <div className="mx-auto grid min-h-screen max-w-[1600px] lg:grid-cols-[245px_1fr]">
         {sidebarOpen && <button className="fixed inset-0 z-30 bg-slate-950/35 lg:hidden" onClick={() => setSidebarOpen(false)} aria-label="Close admin navigation" />}
         <aside className={`${sidebarOpen ? "translate-x-0" : "-translate-x-full"} fixed inset-y-0 left-0 z-40 flex w-[245px] flex-col border-r bg-white transition-transform lg:static lg:translate-x-0`}>
           <div className="flex h-[78px] items-center justify-between px-5">
@@ -69,7 +69,7 @@ export function AdminDashboard({ onExit, notify }: { onExit: () => void; notify:
         </aside>
 
         <main className="min-w-0">
-          <header className="sticky top-[78px] z-20 flex h-16 items-center gap-3 border-b bg-white/95 px-4 backdrop-blur md:px-7">
+          <header className="sticky top-0 z-20 flex h-16 items-center gap-3 border-b bg-white/95 px-4 backdrop-blur md:px-7">
             <Button variant="outline" size="icon" className="lg:hidden" onClick={() => setSidebarOpen(true)}><Menu /></Button>
             <div className="relative hidden w-full max-w-sm md:block"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" /><Input className="pl-9" placeholder="Search members, courses, payments…" /></div>
             <div className="ml-auto flex items-center gap-2"><Button variant="outline" size="icon" className="relative" onClick={() => notify("You have 5 admin notifications")}><Bell /><span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-rose-500" /></Button><DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" className="gap-2"><Avatar className="size-7"><AvatarFallback className="bg-emerald-100 text-[10px] text-emerald-700">SA</AvatarFallback></Avatar><span className="hidden text-xs md:inline">Sophia Admin</span><ChevronDown className="size-3" /></Button></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuLabel>Admin account</DropdownMenuLabel><DropdownMenuSeparator /><DropdownMenuItem>Profile</DropdownMenuItem><DropdownMenuItem>Security</DropdownMenuItem><DropdownMenuItem onClick={onExit}>Return to website</DropdownMenuItem></DropdownMenuContent></DropdownMenu></div>

@@ -6,7 +6,6 @@ import {
   ListVideo, LockKeyhole, Maximize, Menu, Play, Search, ShieldCheck, Sparkles, Star, Users, Volume2, X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { AdminDashboard } from "@/components/admin-dashboard";
 import { CertificateVerification } from "@/components/certificate-verification";
 
 type Course = {
@@ -26,7 +25,7 @@ const courses: Course[] = [
 const categories = ["All courses", "Leadership", "Business", "Compliance", "Marketing"];
 
 export default function Home() {
-  const [view, setView] = useState<"home" | "dashboard" | "course" | "admin" | "verify">("home");
+  const [view, setView] = useState<"home" | "dashboard" | "course" | "verify">("home");
   const [selectedCourse, setSelectedCourse] = useState<Course>(courses[0]);
   const [activeCategory, setActiveCategory] = useState("All courses");
   const [query, setQuery] = useState("");
@@ -45,7 +44,7 @@ export default function Home() {
 
   const goHome = () => { setView("home"); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const goDashboard = () => { setView("dashboard"); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
-  const goAdmin = () => { setView("admin"); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const goAdmin = () => { window.location.assign("/admin"); };
   const goVerify = () => { setView("verify"); setMobileOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
   const openCourse = (course: Course) => { setSelectedCourse(course); setView("course"); window.scrollTo({ top: 0, behavior: "smooth" }); };
 
@@ -132,7 +131,7 @@ export default function Home() {
 
           <footer><div className="brand footer-brand"><span className="brand-mark"><GraduationCap size={22} /></span><span>Certi<span>Learn</span></span></div><p>Learning without borders. Recognition without limits.</p><div><button>About</button><button>Support</button><button>Privacy</button><button>Terms</button></div><small>© 2026 CertiLearn. UI concept only.</small></footer>
         </>
-      ) : view === "dashboard" ? <Dashboard onBrowse={goHome} showToast={showToast} /> : view === "course" ? <CourseDetail course={selectedCourse} onBack={goHome} showToast={showToast} /> : view === "admin" ? <AdminDashboard onExit={goHome} notify={showToast} /> : <CertificateVerification onBack={goHome} notify={showToast} />}
+      ) : view === "dashboard" ? <Dashboard onBrowse={goHome} showToast={showToast} /> : view === "course" ? <CourseDetail course={selectedCourse} onBack={goHome} showToast={showToast} /> : <CertificateVerification onBack={goHome} notify={showToast} />}
 
       {toast && <div className="toast"><Check size={17} />{toast}</div>}
     </main>
