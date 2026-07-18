@@ -3,8 +3,9 @@
 import {
   Activity, ArrowDownRight, ArrowUpRight, Award, Bell, BookOpen, ChevronDown,
   CircleDollarSign, FileText, GraduationCap, LayoutDashboard, Megaphone, Menu,
-  Archive, Eye, Filter, Mail, MoreHorizontal, Pencil, Plus, Search, Settings,
-  ShieldCheck, UserCheck, Users, UserX, WalletCards, X,
+  Archive, Download, Eye, FileSpreadsheet, FileUp, Filter, HardDrive, Mail,
+  MoreHorizontal, Pencil, Plus, Search, Settings, ShieldCheck, UserCheck, Users,
+  UserX, WalletCards, X,
 } from "lucide-react"
 import { useState } from "react"
 
@@ -49,6 +50,14 @@ const adminCourses = [
   { title: "Workplace Health & Safety", category: "Compliance", instructor: "Sarah Okafor", lessons: 18, students: 3260, access: "Free", status: "Published", updated: "Jul 15, 2026", code: "HS", color: "bg-amber-100 text-amber-700" },
   { title: "Effective Team Leadership", category: "Leadership", instructor: "Daniel Kim", lessons: 28, students: 1458, access: "Premium", status: "Draft", updated: "Jul 14, 2026", code: "TL", color: "bg-emerald-100 text-emerald-700" },
   { title: "Customer Service Essentials", category: "Business", instructor: "Nadia Rahman", lessons: 16, students: 892, access: "Free", status: "Review", updated: "Jul 12, 2026", code: "CS", color: "bg-sky-100 text-sky-700" },
+] as const
+
+const adminDocuments = [
+  { title: "Project charter template", course: "Project Management Foundations", category: "Templates", type: "PDF", size: "1.2 MB", access: "Free", downloads: 1842, status: "Published", updated: "Jul 18, 2026" },
+  { title: "Risk assessment worksheet", course: "Project Management Foundations", category: "Worksheets", type: "XLSX", size: "86 KB", access: "Premium", downloads: 1276, status: "Published", updated: "Jul 18, 2026" },
+  { title: "Excel formulas quick reference", course: "Data Analysis with Excel", category: "Guides", type: "PDF", size: "2.4 MB", access: "Premium", downloads: 2319, status: "Published", updated: "Jul 17, 2026" },
+  { title: "Leadership conversation planner", course: "Effective Team Leadership", category: "Templates", type: "DOCX", size: "140 KB", access: "Premium", downloads: 906, status: "Draft", updated: "Jul 15, 2026" },
+  { title: "Workplace safety checklist", course: "Workplace Health & Safety", category: "Checklists", type: "PDF", size: "940 KB", access: "Free", downloads: 3054, status: "Published", updated: "Jul 14, 2026" },
 ] as const
 
 export function AdminDashboard({ onExit, notify }: { onExit: () => void; notify: (message: string) => void }) {
@@ -132,7 +141,7 @@ export function AdminDashboard({ onExit, notify }: { onExit: () => void; notify:
               </TabsContent>
               <TabsContent value="certificates"><Card><CardHeader><CardTitle>Certificate requests</CardTitle><CardDescription>Review eligibility before approving certificates</CardDescription></CardHeader><CardContent className="space-y-3">{certificates.map(([name, course, status, time])=><div key={name} className="flex flex-col gap-3 rounded-xl border p-4 sm:flex-row sm:items-center"><span className="grid size-10 place-items-center rounded-lg bg-amber-50 text-amber-600"><Award /></span><div className="flex-1"><p className="text-sm font-semibold">{name}</p><p className="text-xs text-slate-500">{course} · {time}</p></div><Badge variant="outline">{status}</Badge><Button size="sm" onClick={() => notify(`${name}'s eligibility review opened`)}>Review</Button></div>)}</CardContent></Card></TabsContent>
             </Tabs>
-            </> : active === "Members" ? <AdminMembersWorkspace notify={notify} /> : active === "Courses" ? <AdminCoursesWorkspace notify={notify} /> : <AdminModulePreview active={active} notify={notify} />}
+            </> : active === "Members" ? <AdminMembersWorkspace notify={notify} /> : active === "Courses" ? <AdminCoursesWorkspace notify={notify} /> : active === "Documents" ? <AdminDocumentsWorkspace notify={notify} /> : <AdminModulePreview active={active} notify={notify} />}
           </div>
         </main>
       </div>
@@ -190,6 +199,30 @@ function CourseSummary({ label, value, note, icon: Icon, warning = false }: { la
 
 function CourseRowMenu({ course, notify }: { course: string; notify: (message: string) => void }) {
   return <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal /></Button></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem onClick={() => notify(`${course} preview opened`)}><Eye /> Preview</DropdownMenuItem><DropdownMenuItem onClick={() => notify(`${course} editor opened`)}><Pencil /> Edit course</DropdownMenuItem><DropdownMenuItem onClick={() => notify(`${course} curriculum opened`)}><BookOpen /> Manage curriculum</DropdownMenuItem><DropdownMenuSeparator /><DropdownMenuItem variant="destructive" onClick={() => notify(`${course} archive confirmation opened`)}><Archive /> Archive</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
+}
+
+function AdminDocumentsWorkspace({ notify }: { notify: (message: string) => void }) {
+  const [query, setQuery] = useState("")
+  const [access, setAccess] = useState("All access")
+  const [type, setType] = useState("All files")
+  const [selected, setSelected] = useState<string[]>([])
+  const rows = adminDocuments.filter(document => (access === "All access" || document.access === access) && (type === "All files" || document.type === type) && `${document.title} ${document.course} ${document.category}`.toLowerCase().includes(query.toLowerCase()))
+  const allSelected = rows.length > 0 && rows.every(document => selected.includes(document.title))
+  const applyBulk = (action: string) => { notify(`${action} ${selected.length} document${selected.length === 1 ? "" : "s"} — UI demo`); setSelected([]) }
+
+  return <>
+    <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><Badge variant="secondary" className="mb-2 text-emerald-700">Resource management</Badge><h1 className="text-2xl font-semibold tracking-tight md:text-3xl">Documents</h1><p className="mt-1 text-sm text-slate-500">Organize downloadable learning files and control member access.</p></div><div className="flex gap-2"><Button variant="outline" onClick={() => notify("Storage usage report opened")}><HardDrive /> Storage</Button><Button className="bg-emerald-600 hover:bg-emerald-700" onClick={() => notify("Document upload panel opened — UI demo")}><FileUp /> Upload document</Button></div></div>
+    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><DocumentSummary label="Documents" value="186" note="14 added this month" icon={FileText} /><DocumentSummary label="Total downloads" value="42.8k" note="+18.6% this month" icon={Download} /><DocumentSummary label="Premium files" value="112" note="60% of library" icon={ShieldCheck} /><DocumentSummary label="Storage used" value="8.4 GB" note="of 25 GB available" icon={HardDrive} /></div>
+    <Card><CardHeader className="gap-4"><div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center"><div><CardTitle>Document library</CardTitle><CardDescription>Training files, templates, worksheets, and guides</CardDescription></div><Badge variant="outline">186 files</Badge></div><div className="flex flex-col gap-2 lg:flex-row"><div className="relative flex-1"><Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" /><Input value={query} onChange={event => setQuery(event.target.value)} className="pl-9" placeholder="Search file, course, or category" /></div><FilterMenu label={type} options={["All files", "PDF", "XLSX", "DOCX"]} onSelect={setType} /><FilterMenu label={access} options={["All access", "Free", "Premium"]} onSelect={setAccess} />{selected.length > 0 && <DropdownMenu><DropdownMenuTrigger asChild><Button>{selected.length} selected <ChevronDown /></Button></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuLabel>Bulk actions</DropdownMenuLabel><DropdownMenuSeparator /><DropdownMenuItem onClick={() => applyBulk("Published")}><Eye /> Publish</DropdownMenuItem><DropdownMenuItem onClick={() => applyBulk("Changed to premium:")}><ShieldCheck /> Set premium</DropdownMenuItem><DropdownMenuItem onClick={() => applyBulk("Downloaded")}><Download /> Download files</DropdownMenuItem><DropdownMenuSeparator /><DropdownMenuItem variant="destructive" onClick={() => applyBulk("Archived")}><Archive /> Archive</DropdownMenuItem></DropdownMenuContent></DropdownMenu>}</div></CardHeader><CardContent className="px-0"><Table><TableHeader><TableRow><TableHead className="w-12 pl-6"><Checkbox checked={allSelected ? true : selected.length ? "indeterminate" : false} onCheckedChange={() => setSelected(allSelected ? [] : rows.map(document => document.title))} aria-label="Select all documents" /></TableHead><TableHead>Document</TableHead><TableHead>Course</TableHead><TableHead>File</TableHead><TableHead>Access</TableHead><TableHead>Downloads</TableHead><TableHead>Status</TableHead><TableHead>Updated</TableHead><TableHead className="w-12" /></TableRow></TableHeader><TableBody>{rows.map(document => <TableRow key={document.title} data-state={selected.includes(document.title) ? "selected" : undefined}><TableCell className="pl-6"><Checkbox checked={selected.includes(document.title)} onCheckedChange={() => setSelected(current => current.includes(document.title) ? current.filter(title => title !== document.title) : [...current, document.title])} aria-label={`Select ${document.title}`} /></TableCell><TableCell><div className="flex min-w-[230px] items-center gap-3"><span className={`grid size-10 shrink-0 place-items-center rounded-lg ${document.type === "XLSX" ? "bg-emerald-50 text-emerald-700" : document.type === "DOCX" ? "bg-sky-50 text-sky-700" : "bg-rose-50 text-rose-700"}`}>{document.type === "XLSX" ? <FileSpreadsheet className="size-5" /> : <FileText className="size-5" />}</span><div><p className="text-sm font-medium">{document.title}</p><p className="text-xs text-slate-500">{document.category}</p></div></div></TableCell><TableCell className="max-w-[220px] text-sm text-slate-600">{document.course}</TableCell><TableCell><p className="text-sm">{document.type}</p><p className="text-xs text-slate-400">{document.size}</p></TableCell><TableCell><Badge variant={document.access === "Free" ? "secondary" : "outline"}>{document.access}</Badge></TableCell><TableCell className="text-sm text-slate-600">{document.downloads.toLocaleString()}</TableCell><TableCell><Badge className={document.status === "Published" ? "bg-emerald-100 text-emerald-700" : "bg-slate-100 text-slate-600"}>{document.status}</Badge></TableCell><TableCell className="whitespace-nowrap text-xs text-slate-500">{document.updated}</TableCell><TableCell><DocumentRowMenu document={document.title} notify={notify} /></TableCell></TableRow>)}{rows.length === 0 && <TableRow><TableCell colSpan={9} className="h-40 text-center"><FileText className="mx-auto mb-2 size-6 text-slate-400" /><p className="text-sm font-medium">No matching documents</p><p className="text-xs text-slate-500">Try another file type, access level, or search.</p><Button variant="link" size="sm" onClick={() => { setQuery(""); setType("All files"); setAccess("All access"); }}>Clear filters</Button></TableCell></TableRow>}</TableBody></Table><div className="flex items-center justify-between border-t px-6 py-3 text-xs text-slate-500"><span>Showing {rows.length} demo documents</span><span>8.4 GB of 25 GB used</span></div></CardContent></Card>
+  </>
+}
+
+function DocumentSummary({ label, value, note, icon: Icon }: { label: string; value: string; note: string; icon: typeof Users }) {
+  return <Card><CardContent className="flex items-center gap-4 pt-5"><span className="grid size-11 place-items-center rounded-xl bg-emerald-50 text-emerald-700"><Icon className="size-5" /></span><div><strong className="text-2xl font-semibold">{value}</strong><p className="text-sm text-slate-700">{label}</p><small className="text-xs text-slate-400">{note}</small></div></CardContent></Card>
+}
+
+function DocumentRowMenu({ document, notify }: { document: string; notify: (message: string) => void }) {
+  return <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon"><MoreHorizontal /></Button></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem onClick={() => notify(`${document} preview opened`)}><Eye /> Preview</DropdownMenuItem><DropdownMenuItem onClick={() => notify(`${document} details editor opened`)}><Pencil /> Edit details</DropdownMenuItem><DropdownMenuItem onClick={() => notify(`${document} download ready`)}><Download /> Download</DropdownMenuItem><DropdownMenuSeparator /><DropdownMenuItem variant="destructive" onClick={() => notify(`${document} archive confirmation opened`)}><Archive /> Archive</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
 }
 
 function MemberSummary({ label, value, note, icon: Icon, warning = false }: { label: string; value: string; note: string; icon: typeof Users; warning?: boolean }) {
