@@ -12,6 +12,7 @@ const links = [
   ["Home", "/"],
   ["Courses", "/courses"],
   ["Pricing", "/pricing"],
+  ["Verify", "/verify-certificate"],
   ["Announcements", "/announcements"],
   ["About", "/about"],
   ["Support", "/support"],

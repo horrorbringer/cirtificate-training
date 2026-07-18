@@ -32,7 +32,6 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { CertificateVerification } from "@/components/certificate-verification";
 
 export type Course = {
   title: string;
@@ -131,7 +130,7 @@ const categories = [
 ];
 
 export default function Home() {
-  const [view, setView] = useState<"home" | "course" | "verify">("home");
+  const [view, setView] = useState<"home" | "course">("home");
   const [selectedCourse, setSelectedCourse] = useState<Course>(courses[0]);
   const [activeCategory, setActiveCategory] = useState("All courses");
   const [query, setQuery] = useState("");
@@ -168,11 +167,6 @@ export default function Home() {
   };
   const goRegister = () => {
     window.location.assign("/register");
-  };
-  const goVerify = () => {
-    setView("verify");
-    setMobileOpen(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const openCourse = (course: Course) => {
     setSelectedCourse(course);
@@ -479,14 +473,12 @@ export default function Home() {
             <small>© 2026 CertiLearn. UI concept only.</small>
           </footer>
         </>
-      ) : view === "course" ? (
+      ) : (
         <CourseDetail
           course={selectedCourse}
           onBack={goHome}
           showToast={showToast}
         />
-      ) : (
-        <CertificateVerification onBack={goHome} notify={showToast} />
       )}
 
       {toast && (
