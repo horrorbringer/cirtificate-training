@@ -158,6 +158,138 @@
   .member-sidebar.open { transform: translateX(0); }
 }
 
+/* Member navigation: explicit shadcn Button composition */
+.member-shell {
+  grid-template-columns: 252px minmax(0, 1fr);
+}
+
+.member-sidebar {
+  width: 252px;
+  gap: 26px;
+  padding: 24px 14px 16px;
+}
+
+.member-sidebar > div {
+  gap: 4px;
+}
+
+.member-sidebar > div:nth-of-type(2) {
+  border-top: 1px solid var(--line);
+  padding-top: 20px;
+}
+
+.member-sidebar > div > small {
+  padding: 0 10px 8px;
+  color: #929cab;
+  font-size: 0.625rem;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: 0.11em;
+}
+
+.member-sidebar [data-slot="button"] {
+  width: 100%;
+  height: 40px;
+  flex: 0 0 auto;
+  justify-content: flex-start;
+  gap: 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  padding: 0 10px;
+  color: #647185;
+  font-size: 0.775rem;
+  font-weight: 590;
+  line-height: 1;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.member-sidebar [data-slot="button"]:hover {
+  background: #f1f5f7;
+  color: var(--navy);
+}
+
+.member-sidebar [data-slot="button"].active {
+  background: #e8f6f3;
+  color: #087f72;
+  font-weight: 700;
+  box-shadow: inset 3px 0 0 var(--teal);
+}
+
+.member-sidebar [data-slot="button"] > svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  color: #8290a2;
+  stroke-width: 1.8;
+}
+
+.member-sidebar [data-slot="button"].active > svg {
+  color: var(--teal-dark);
+  stroke-width: 2.1;
+}
+
+.member-sidebar [data-slot="badge"] {
+  min-width: 21px;
+  height: 20px;
+  margin-left: auto;
+  justify-content: center;
+  border: 0;
+  background: #edf1f4;
+  padding: 0 6px;
+  color: #687588;
+  font-size: 0.625rem;
+  font-weight: 700;
+}
+
+.member-sidebar [data-slot="button"].active [data-slot="badge"] {
+  background: #cfece6;
+  color: #087f72;
+}
+
+.member-sidebar .upgrade-card {
+  width: 100%;
+  margin-top: auto;
+  border: 0;
+  border-radius: 12px;
+  background: var(--navy);
+  color: #fff;
+  box-shadow: none;
+}
+
+.member-sidebar .upgrade-card [data-slot="card-content"] {
+  gap: 3px;
+  padding: 16px;
+}
+
+.member-sidebar .upgrade-card strong {
+  margin-top: 3px;
+  font-size: 0.75rem;
+}
+
+.member-sidebar .upgrade-card [data-slot="card-content"] > span {
+  font-size: 0.625rem;
+}
+
+.member-sidebar .upgrade-card [data-slot="button"] {
+  height: 32px;
+  margin-top: 10px;
+  justify-content: center;
+  background: #fff;
+  color: var(--navy);
+  font-size: 0.6875rem;
+}
+
+.member-sidebar .upgrade-card [data-slot="button"]:hover {
+  background: #eef3f5;
+}
+
+@media (max-width: 760px) {
+  .member-shell { grid-template-columns: 1fr; }
+  .member-sidebar { width: 252px; }
+}
+
 .member-section-title {
   display: flex;
   align-items: flex-end;
@@ -434,6 +566,33 @@
 .resource-table table { min-width: 760px; }
 .resource-table th { height: 40px; color: #8d96a4; font-size: 8px; text-transform: uppercase; }
 .resource-table td { padding-top: 12px; padding-bottom: 12px; }
+.resource-highlight { padding: 0; }
+.resource-highlight > [data-slot="card-content"] { display: flex; }
+.resource-highlight > [data-slot="card-content"] > div { display: flex; align-items: center; gap: 14px; }
+.resource-highlight > [data-slot="card-content"] > div:first-child > span { display: grid; width: 45px; height: 45px; place-items: center; border-radius: 12px; background: rgba(90,222,199,.13); color: #62dac8; }
+.resource-highlight > [data-slot="card-content"] > div:last-child { padding-left: 0; border-left: 0; }
+.resource-highlight [data-slot="badge"] { width: fit-content; background: rgba(90,222,199,.12); color: #65d9c8; font-size: 0.625rem; text-transform: uppercase; }
+.download-note { padding: 0; }
+.download-note > [data-slot="card-content"] { display: flex; }
+.download-note > [data-slot="card-content"] > svg { width: 19px; }
+.download-note > [data-slot="card-content"] > div { flex: 1; }
+
+@media (max-width: 760px) {
+  .resource-highlight > [data-slot="card-content"] {
+    align-items: flex-start;
+    flex-direction: column;
+    border: 0;
+  }
+  .resource-highlight > [data-slot="card-content"] > [data-slot="separator"] {
+    width: 100%;
+    height: 1px;
+  }
+  .download-note > [data-slot="card-content"] {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .download-note > [data-slot="card-content"] > button { margin-left: 30px; }
+}
 
 /* Global typography system */
 :root {
