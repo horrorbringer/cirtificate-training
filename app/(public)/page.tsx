@@ -741,7 +741,9 @@ export function CourseDetail({
                         showToast(
                           enrolled
                             ? `${name} ready to download`
-                            : "Enroll to unlock course resources",
+                            : course.premium
+                              ? "Premium membership is required for this resource"
+                              : "Enroll to unlock course resources",
                         )
                       }
                     >
@@ -767,25 +769,59 @@ export function CourseDetail({
               </>
             )}
           </div>
-          <button
-            className="primary-btn"
-            onClick={() => {
-              setEnrolled(true);
-              showToast("You’re enrolled — welcome to the course!");
-            }}
-          >
-            {enrolled ? (
-              <>
-                <Check /> Enrolled
-              </>
-            ) : (
-              <>
-                Start learning <ArrowRight />
-              </>
-            )}
-          </button>
-          <small>No credit card required</small>
+          {course.premium && !enrolled ? (
+            <>
+              <Link className="primary-btn" href="/checkout?plan=yearly">
+                Unlock with Premium <ArrowRight />
+              </Link>
+              <Link
+                className="mt-2 flex justify-center text-[10px] font-medium text-emerald-700 hover:underline"
+                href="/pricing"
+              >
+                Compare monthly and yearly plans
+              </Link>
+            </>
+          ) : (
+            <button
+              className="primary-btn"
+              onClick={() => {
+                setEnrolled(true);
+                showToast("You’re enrolled — welcome to the course!");
+              }}
+            >
+              {enrolled ? (
+                <>
+                  <Check /> Enrolled
+                </>
+              ) : (
+                <>
+                  Start learning <ArrowRight />
+                </>
+              )}
+            </button>
+          )}
+          <small>
+            {course.premium
+              ? "Includes every premium course and resource"
+              : "Free account required · No credit card"}
+          </small>
           <hr />
+          {course.premium && !enrolled && (
+            <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3">
+              <div className="flex items-start gap-2">
+                <LockKeyhole className="mt-0.5 size-4 shrink-0 text-amber-700" />
+                <div>
+                  <strong className="block text-[10px] text-amber-950">
+                    Premium access required
+                  </strong>
+                  <p className="mt-1 text-[9px] leading-4 text-amber-800/75">
+                    Preview the first lesson free. Membership unlocks the full
+                    curriculum, downloads, and certificate request.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
           <h3>This course includes</h3>
           <ul>
             <li>

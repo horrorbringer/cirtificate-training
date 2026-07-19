@@ -10,6 +10,7 @@ import {
   FileText,
   FolderOpen,
   LockKeyhole,
+  LogIn,
   Search,
   ShieldCheck,
   SlidersHorizontal,
@@ -131,7 +132,9 @@ export function PublicResources() {
   const [selected, setSelected] = useState<(typeof resources)[number] | null>(
     null,
   );
-  const [toast, setToast] = useState("");
+  const [gatedResource, setGatedResource] = useState<
+    (typeof resources)[number] | null
+  >(null);
 
   const rows = useMemo(() => {
     const filtered = resources.filter(
@@ -152,9 +155,16 @@ export function PublicResources() {
     );
   }, [access, category, query, sort]);
 
-  const notify = (message: string) => {
-    setToast(message);
-    window.setTimeout(() => setToast(""), 2400);
+  const requestDownload = (resource: (typeof resources)[number]) => {
+    setSelected(null);
+    setGatedResource(resource);
+    window.setTimeout(
+      () =>
+        document
+          .querySelector("#resource-access")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" }),
+      20,
+    );
   };
 
   return (
@@ -222,6 +232,55 @@ export function PublicResources() {
             </CardContent>
           </Card>
         </div>
+
+        {gatedResource && (
+          <Card
+            id="resource-access"
+            className="mb-7 overflow-hidden border-emerald-200 py-0 shadow-sm"
+          >
+            <CardContent className="flex flex-col gap-5 bg-emerald-50/60 p-5 sm:flex-row sm:items-center">
+              <span className="grid size-12 shrink-0 place-items-center rounded-xl bg-white text-emerald-700 shadow-sm">
+                <LogIn />
+              </span>
+              <div className="flex-1">
+                <Badge className="bg-emerald-100 text-emerald-700">
+                  Free member download
+                </Badge>
+                <h2 className="mt-2 text-base font-semibold">
+                  Sign in to download {gatedResource.title}
+                </h2>
+                <p className="mt-1 text-xs leading-5 text-slate-600">
+                  Free accounts can download selected resources and keep a
+                  personal download history.
+                </p>
+              </div>
+              <div className="flex shrink-0 flex-wrap gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setGatedResource(null)}
+                >
+                  Not now
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="bg-white"
+                >
+                  <Link href="/login">Log in</Link>
+                </Button>
+                <Button
+                  asChild
+                  size="sm"
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                >
+                  <Link href="/register">Create free account</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <Card className="mb-7 gap-4 py-4 shadow-none">
           <CardContent className="flex flex-col gap-4 px-4 lg:flex-row lg:items-center">
@@ -354,9 +413,7 @@ export function PublicResources() {
                     <Button
                       size="sm"
                       className="bg-emerald-600 hover:bg-emerald-700"
-                      onClick={() =>
-                        notify(`${resource.title} download ready — UI demo`)
-                      }
+                      onClick={() => requestDownload(resource)}
                     >
                       <Download /> Download
                     </Button>
@@ -462,20 +519,13 @@ export function PublicResources() {
               ) : (
                 <Button
                   className="w-full bg-emerald-600 hover:bg-emerald-700"
-                  onClick={() =>
-                    notify(`${selected.title} download ready — UI demo`)
-                  }
+                  onClick={() => requestDownload(selected)}
                 >
                   <Download /> Download free resource
                 </Button>
               )}
             </CardContent>
           </Card>
-        </div>
-      )}
-      {toast && (
-        <div className="toast">
-          <CheckCircle2 /> {toast}
         </div>
       )}
     </main>
