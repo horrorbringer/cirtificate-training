@@ -19,7 +19,10 @@ import {
   BadgeCheck,
   BarChart3,
   CalendarClock,
+  Check,
   CheckCircle2,
+  CirclePlay,
+  ClipboardCheck,
   Clock3,
   Copy,
   CreditCard,
@@ -30,6 +33,8 @@ import {
   Filter,
   Globe2,
   HardDrive,
+  Hourglass,
+  ImageIcon,
   Mail,
   MoreHorizontal,
   Pencil,
@@ -58,6 +63,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -1842,6 +1848,11 @@ function AdminCoursesWorkspace({
   const [status, setStatus] = useState("All statuses");
   const [access, setAccess] = useState("All access");
   const [selected, setSelected] = useState<string[]>([]);
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editorStep, setEditorStep] = useState(1);
+  const [courseTitle, setCourseTitle] = useState("");
+  const [courseAccess, setCourseAccess] = useState("Premium");
+  const [publishNow, setPublishNow] = useState(false);
   const rows = adminCourses.filter(
     (course) =>
       (status === "All statuses" || course.status === status) &&
@@ -1882,12 +1893,302 @@ function AdminCoursesWorkspace({
           </Button>
           <Button
             className="bg-emerald-600 hover:bg-emerald-700"
-            onClick={() => notify("New course editor opened — UI demo")}
+            onClick={() => {
+              setEditorOpen(true);
+              setEditorStep(1);
+            }}
           >
             <Plus /> New course
           </Button>
         </div>
       </div>
+      {editorOpen && (
+        <Card className="overflow-hidden border-emerald-200 py-0 shadow-sm">
+          <CardHeader className="border-b bg-emerald-50/60 p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <Badge className="bg-emerald-100 text-emerald-700">
+                  Course builder
+                </Badge>
+                <CardTitle className="mt-3 text-xl">
+                  Create a new course
+                </CardTitle>
+                <CardDescription className="mt-1">
+                  Build the course structure now; media uploads are UI
+                  placeholders.
+                </CardDescription>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setEditorOpen(false)}
+                aria-label="Close course builder"
+              >
+                <X />
+              </Button>
+            </div>
+            <div className="mt-4 grid grid-cols-3 gap-2">
+              {["Basics", "Curriculum", "Publish"].map((label, index) => (
+                <button
+                  key={label}
+                  onClick={() => setEditorStep(index + 1)}
+                  className="text-left"
+                >
+                  <div
+                    className={`h-1.5 rounded-full ${editorStep >= index + 1 ? "bg-emerald-500" : "bg-emerald-100"}`}
+                  />
+                  <small
+                    className={`mt-1.5 block text-[10px] ${editorStep === index + 1 ? "font-semibold text-emerald-700" : "text-slate-500"}`}
+                  >
+                    {index + 1}. {label}
+                  </small>
+                </button>
+              ))}
+            </div>
+          </CardHeader>
+          <CardContent className="p-5">
+            {editorStep === 1 ? (
+              <div className="grid gap-5 lg:grid-cols-[1fr_280px]">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="grid gap-2 text-xs font-medium sm:col-span-2">
+                    Course title
+                    <Input
+                      value={courseTitle}
+                      onChange={(event) => setCourseTitle(event.target.value)}
+                      placeholder="e.g. Strategic Communication Essentials"
+                    />
+                  </label>
+                  <label className="grid gap-2 text-xs font-medium">
+                    Category
+                    <select className="h-9 rounded-lg border bg-white px-3 text-sm">
+                      <option>Leadership</option>
+                      <option>Business</option>
+                      <option>Compliance</option>
+                      <option>Marketing</option>
+                    </select>
+                  </label>
+                  <label className="grid gap-2 text-xs font-medium">
+                    Difficulty
+                    <select className="h-9 rounded-lg border bg-white px-3 text-sm">
+                      <option>Beginner</option>
+                      <option>Intermediate</option>
+                      <option>Advanced</option>
+                    </select>
+                  </label>
+                  <label className="grid gap-2 text-xs font-medium">
+                    Instructor
+                    <select className="h-9 rounded-lg border bg-white px-3 text-sm">
+                      <option>Dr. Jordan Nwosu</option>
+                      <option>Maya Kone</option>
+                      <option>Samuel Chen</option>
+                    </select>
+                  </label>
+                  <label className="grid gap-2 text-xs font-medium">
+                    Access
+                    <select
+                      value={courseAccess}
+                      onChange={(event) => setCourseAccess(event.target.value)}
+                      className="h-9 rounded-lg border bg-white px-3 text-sm"
+                    >
+                      <option>Free</option>
+                      <option>Premium</option>
+                    </select>
+                  </label>
+                  <label className="grid gap-2 text-xs font-medium sm:col-span-2">
+                    Short description
+                    <Textarea
+                      className="min-h-28"
+                      placeholder="Describe the learner outcome and practical value..."
+                    />
+                  </label>
+                </div>
+                <div className="rounded-xl border border-dashed bg-slate-50 p-5 text-center">
+                  <span className="mx-auto grid size-14 place-items-center rounded-xl bg-white text-slate-400 shadow-sm">
+                    <ImageIcon />
+                  </span>
+                  <h3 className="mt-4 text-sm font-medium">Course thumbnail</h3>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">
+                    Recommended 1280 × 720, JPG or PNG
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-4 bg-white"
+                    onClick={() => notify("Thumbnail picker opened — UI demo")}
+                  >
+                    Choose image
+                  </Button>
+                </div>
+              </div>
+            ) : editorStep === 2 ? (
+              <div>
+                <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+                  <div>
+                    <h3 className="text-sm font-medium">Course curriculum</h3>
+                    <p className="mt-1 text-xs text-slate-500">
+                      Organize lessons, videos, documents, and assessments.
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => notify("New module added — UI demo")}
+                  >
+                    <Plus /> Add module
+                  </Button>
+                </div>
+                <div className="mt-5 space-y-3">
+                  {[
+                    ["Module 1", "Course orientation", "3 lessons · 42 min"],
+                    ["Module 2", "Core concepts", "4 lessons · 1h 25 min"],
+                  ].map(([number, title, meta], index) => (
+                    <div
+                      key={number}
+                      className="overflow-hidden rounded-xl border"
+                    >
+                      <div className="flex items-center gap-3 bg-slate-50 p-4">
+                        <span className="grid size-8 place-items-center rounded-lg bg-white text-xs font-semibold text-emerald-700 shadow-sm">
+                          {index + 1}
+                        </span>
+                        <div className="flex-1">
+                          <p className="text-[10px] uppercase tracking-wide text-slate-400">
+                            {number}
+                          </p>
+                          <strong className="text-sm font-medium">
+                            {title}
+                          </strong>
+                        </div>
+                        <small className="text-xs text-slate-500">{meta}</small>
+                        <Button variant="ghost" size="icon-sm">
+                          <MoreHorizontal />
+                        </Button>
+                      </div>
+                      <div className="flex flex-wrap gap-2 border-t p-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => notify("Video lesson added — UI demo")}
+                        >
+                          <CirclePlay /> Video lesson
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => notify("Document added — UI demo")}
+                        >
+                          <FileText /> Document
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => notify("Assessment added — UI demo")}
+                        >
+                          <ClipboardCheck /> Assessment
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-5 lg:grid-cols-[1fr_300px]">
+                <div>
+                  <h3 className="text-sm font-medium">Publishing checklist</h3>
+                  <div className="mt-4 space-y-3">
+                    {[
+                      ["Course information", Boolean(courseTitle)],
+                      ["Thumbnail selected", false],
+                      ["At least one module", true],
+                      ["Instructor assigned", true],
+                      ["Certificate settings", false],
+                    ].map(([label, ready]) => (
+                      <div
+                        key={label as string}
+                        className="flex items-center gap-3 rounded-lg border p-3"
+                      >
+                        <span
+                          className={`grid size-7 place-items-center rounded-full ${ready ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"}`}
+                        >
+                          {ready ? <Check /> : <Hourglass />}
+                        </span>
+                        <span className="flex-1 text-sm">
+                          {label as string}
+                        </span>
+                        <Badge variant="outline">
+                          {ready ? "Ready" : "Needs attention"}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="rounded-xl border bg-slate-50 p-5">
+                  <Badge variant="secondary">Course summary</Badge>
+                  <h3 className="mt-3 text-base font-semibold">
+                    {courseTitle || "Untitled course"}
+                  </h3>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Leadership · Beginner · {courseAccess}
+                  </p>
+                  <Separator className="my-4" />
+                  <label className="flex items-center justify-between gap-3 text-sm">
+                    Publish immediately
+                    <Switch
+                      checked={publishNow}
+                      onCheckedChange={setPublishNow}
+                    />
+                  </label>
+                  <p className="mt-2 text-[10px] leading-4 text-slate-500">
+                    Turn this off to save the course as a draft for later
+                    review.
+                  </p>
+                </div>
+              </div>
+            )}
+          </CardContent>
+          <CardFooter className="justify-between bg-slate-50 p-4">
+            <Button
+              variant="outline"
+              onClick={() =>
+                editorStep === 1
+                  ? setEditorOpen(false)
+                  : setEditorStep(editorStep - 1)
+              }
+            >
+              {editorStep === 1 ? "Cancel" : "Back"}
+            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                onClick={() => notify("Course draft saved — UI demo")}
+              >
+                Save draft
+              </Button>
+              <Button
+                className="bg-emerald-600 hover:bg-emerald-700"
+                disabled={editorStep === 1 && !courseTitle.trim()}
+                onClick={() => {
+                  if (editorStep < 3) setEditorStep(editorStep + 1);
+                  else {
+                    notify(
+                      publishNow
+                        ? "Course published successfully — UI demo"
+                        : "Course saved as draft — UI demo",
+                    );
+                    setEditorOpen(false);
+                  }
+                }}
+              >
+                {editorStep === 3
+                  ? publishNow
+                    ? "Publish course"
+                    : "Save as draft"
+                  : "Continue"}
+                <ArrowRight />
+              </Button>
+            </div>
+          </CardFooter>
+        </Card>
+      )}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <CourseSummary
           label="Total courses"
