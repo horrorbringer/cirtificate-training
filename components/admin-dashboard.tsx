@@ -57,6 +57,16 @@ import {
 import { useState } from "react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -69,6 +79,14 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -79,6 +97,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import {
   Table,
   TableBody,
@@ -1586,6 +1612,13 @@ function AdminMembersWorkspace({
   const [status, setStatus] = useState("All statuses");
   const [plan, setPlan] = useState("All plans");
   const [selected, setSelected] = useState<string[]>([]);
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteSent, setInviteSent] = useState(false);
+  const [inviteName, setInviteName] = useState("");
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [invitePlan, setInvitePlan] = useState("Free");
+  const [sendWelcome, setSendWelcome] = useState(true);
+  const [requireVerification, setRequireVerification] = useState(true);
   const rows = members.filter(
     (member) =>
       (status === "All statuses" || member.status === status) &&
@@ -1626,12 +1659,175 @@ function AdminMembersWorkspace({
           </Button>
           <Button
             className="bg-emerald-600 hover:bg-emerald-700"
-            onClick={() => notify("Invite member form opened")}
+            onClick={() => {
+              setInviteOpen(true);
+              setInviteSent(false);
+            }}
           >
             <Plus /> Invite member
           </Button>
         </div>
       </div>
+      <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+          <DialogHeader>
+            <Badge className="mb-1 w-fit bg-emerald-100 text-emerald-700">
+              Member invitation
+            </Badge>
+            <DialogTitle>
+              {inviteSent ? "Invitation ready" : "Invite a new member"}
+            </DialogTitle>
+            <DialogDescription>
+              {inviteSent
+                ? "The mock invitation has been prepared successfully."
+                : "Set initial access and send account setup instructions."}
+            </DialogDescription>
+          </DialogHeader>
+          {inviteSent ? (
+            <div className="flex flex-col items-center py-5 text-center">
+              <span className="grid size-14 place-items-center rounded-full bg-emerald-100 text-emerald-700">
+                <Mail className="size-6" />
+              </span>
+              <h3 className="mt-4 text-base font-semibold">
+                Invitation prepared for {inviteName}
+              </h3>
+              <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
+                {inviteEmail} will receive a mock setup link for a {invitePlan}
+                membership. No email is actually sent in this UI demo.
+              </p>
+              <div className="mt-5 flex flex-wrap justify-center gap-2">
+                <Button variant="outline" onClick={() => setInviteOpen(false)}>
+                  Done
+                </Button>
+                <Button
+                  onClick={() => {
+                    setInviteSent(false);
+                    setInviteName("");
+                    setInviteEmail("");
+                    setInvitePlan("Free");
+                  }}
+                >
+                  <Plus /> Invite another
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="grid gap-2 text-xs font-medium">
+                    Full name
+                    <Input
+                      value={inviteName}
+                      onChange={(event) => setInviteName(event.target.value)}
+                      placeholder="e.g. Daniel Owusu"
+                    />
+                  </label>
+                  <label className="grid gap-2 text-xs font-medium">
+                    Email address
+                    <Input
+                      value={inviteEmail}
+                      onChange={(event) => setInviteEmail(event.target.value)}
+                      type="email"
+                      placeholder="daniel@example.com"
+                    />
+                  </label>
+                  <label className="grid gap-2 text-xs font-medium">
+                    Country or region
+                    <select className="h-9 rounded-lg border bg-white px-3 text-sm">
+                      <option>Ghana</option>
+                      <option>Cambodia</option>
+                      <option>Kenya</option>
+                      <option>United Kingdom</option>
+                      <option>South Africa</option>
+                    </select>
+                  </label>
+                  <label className="grid gap-2 text-xs font-medium">
+                    Initial membership
+                    <select
+                      value={invitePlan}
+                      onChange={(event) => setInvitePlan(event.target.value)}
+                      className="h-9 rounded-lg border bg-white px-3 text-sm"
+                    >
+                      <option>Free</option>
+                      <option>Monthly</option>
+                      <option>Yearly</option>
+                    </select>
+                  </label>
+                  <label className="grid gap-2 text-xs font-medium sm:col-span-2">
+                    Personal message
+                    <Textarea
+                      className="min-h-24"
+                      placeholder="Add an optional note to the welcome invitation..."
+                    />
+                  </label>
+                </div>
+                <div className="space-y-3">
+                  <div className="rounded-xl border bg-slate-50 p-4">
+                    <h3 className="text-sm font-medium">Account setup</h3>
+                    <div className="mt-4 space-y-4">
+                      <label className="flex items-start justify-between gap-3">
+                        <span>
+                          <strong className="block text-xs font-medium">
+                            Send welcome email
+                          </strong>
+                          <small className="mt-1 block text-[10px] leading-4 text-slate-500">
+                            Include a secure account setup link.
+                          </small>
+                        </span>
+                        <Switch
+                          checked={sendWelcome}
+                          onCheckedChange={setSendWelcome}
+                        />
+                      </label>
+                      <Separator />
+                      <label className="flex items-start justify-between gap-3">
+                        <span>
+                          <strong className="block text-xs font-medium">
+                            Require email verification
+                          </strong>
+                          <small className="mt-1 block text-[10px] leading-4 text-slate-500">
+                            Keep the account pending until verified.
+                          </small>
+                        </span>
+                        <Switch
+                          checked={requireVerification}
+                          onCheckedChange={setRequireVerification}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                  <div className="flex gap-3 rounded-xl bg-amber-50 p-4">
+                    <ShieldCheck className="size-5 shrink-0 text-amber-700" />
+                    <p className="text-[10px] leading-5 text-amber-900/75">
+                      Paid access should normally be activated by a verified
+                      payment or an authorized administrator assignment.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <DialogFooter className="justify-between border-t pt-4 sm:justify-between">
+                <Button variant="outline" onClick={() => setInviteOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                  disabled={
+                    !inviteName.trim() ||
+                    !/^\S+@\S+\.\S+$/.test(inviteEmail.trim())
+                  }
+                  onClick={() => {
+                    setInviteSent(true);
+                    notify("Member invitation prepared — UI demo");
+                  }}
+                >
+                  <Send /> Send invitation
+                </Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MemberSummary
           label="All members"
@@ -2455,32 +2651,45 @@ function CourseRowMenu({
   course: string;
   notify: (message: string) => void;
 }) {
+  const [archiveOpen, setArchiveOpen] = useState(false);
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <MoreHorizontal />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => notify(`${course} preview opened`)}>
-          <Eye /> Preview
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => notify(`${course} editor opened`)}>
-          <Pencil /> Edit course
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => notify(`${course} curriculum opened`)}>
-          <BookOpen /> Manage curriculum
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          variant="destructive"
-          onClick={() => notify(`${course} archive confirmation opened`)}
-        >
-          <Archive /> Archive
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <MoreHorizontal />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => notify(`${course} preview opened`)}>
+            <Eye /> Preview
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => notify(`${course} editor opened`)}>
+            <Pencil /> Edit course
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => notify(`${course} curriculum opened`)}
+          >
+            <BookOpen /> Manage curriculum
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            variant="destructive"
+            onSelect={() => setArchiveOpen(true)}
+          >
+            <Archive /> Archive
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <ArchiveConfirmation
+        open={archiveOpen}
+        onOpenChange={setArchiveOpen}
+        item={course}
+        itemType="course"
+        onConfirm={() => notify(`${course} archived — UI demo`)}
+      />
+    </>
   );
 }
 
@@ -2546,30 +2755,18 @@ function AdminDocumentsWorkspace({
           </Button>
         </div>
       </div>
-      {uploadOpen && (
-        <Card className="overflow-hidden border-emerald-200 py-0 shadow-sm">
-          <CardHeader className="border-b bg-emerald-50/60 p-5">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <Badge className="bg-emerald-100 text-emerald-700">
-                  New learning resource
-                </Badge>
-                <CardTitle className="mt-3 text-xl">Upload document</CardTitle>
-                <CardDescription className="mt-1">
-                  Add the file, learning context, and member access rules.
-                </CardDescription>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setUploadOpen(false)}
-                aria-label="Close document upload"
-              >
-                <X />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="grid gap-6 p-5 lg:grid-cols-[300px_1fr]">
+      <Sheet open={uploadOpen} onOpenChange={setUploadOpen}>
+        <SheetContent className="sm:max-w-3xl">
+          <SheetHeader>
+            <Badge className="mb-1 w-fit bg-emerald-100 text-emerald-700">
+              New learning resource
+            </Badge>
+            <SheetTitle>Upload document</SheetTitle>
+            <SheetDescription>
+              Add the file, learning context, and member access rules.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="grid flex-1 gap-6 overflow-y-auto p-6 lg:grid-cols-[260px_1fr]">
             <div>
               <button
                 className={`flex min-h-64 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition ${uploadFile ? "border-emerald-300 bg-emerald-50/50" : "border-slate-200 bg-slate-50 hover:border-emerald-300"}`}
@@ -2681,8 +2878,8 @@ function AdminDocumentsWorkspace({
                 />
               </div>
             </div>
-          </CardContent>
-          <CardFooter className="justify-between bg-slate-50 p-4">
+          </div>
+          <SheetFooter className="justify-between sm:justify-between">
             <Button variant="outline" onClick={() => setUploadOpen(false)}>
               Cancel
             </Button>
@@ -2710,9 +2907,9 @@ function AdminDocumentsWorkspace({
                 <FileUp /> {publishDocument ? "Publish document" : "Save draft"}
               </Button>
             </div>
-          </CardFooter>
-        </Card>
-      )}
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <DocumentSummary
           label="Documents"
@@ -2987,34 +3184,83 @@ function DocumentRowMenu({
   document: string;
   notify: (message: string) => void;
 }) {
+  const [archiveOpen, setArchiveOpen] = useState(false);
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <MoreHorizontal />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => notify(`${document} preview opened`)}>
-          <Eye /> Preview
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => notify(`${document} details editor opened`)}
-        >
-          <Pencil /> Edit details
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => notify(`${document} download ready`)}>
-          <Download /> Download
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          variant="destructive"
-          onClick={() => notify(`${document} archive confirmation opened`)}
-        >
-          <Archive /> Archive
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <MoreHorizontal />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            onClick={() => notify(`${document} preview opened`)}
+          >
+            <Eye /> Preview
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => notify(`${document} details editor opened`)}
+          >
+            <Pencil /> Edit details
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => notify(`${document} download ready`)}
+          >
+            <Download /> Download
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            variant="destructive"
+            onSelect={() => setArchiveOpen(true)}
+          >
+            <Archive /> Archive
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <ArchiveConfirmation
+        open={archiveOpen}
+        onOpenChange={setArchiveOpen}
+        item={document}
+        itemType="document"
+        onConfirm={() => notify(`${document} archived — UI demo`)}
+      />
+    </>
+  );
+}
+
+function ArchiveConfirmation({
+  open,
+  onOpenChange,
+  item,
+  itemType,
+  onConfirm,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  item: string;
+  itemType: "course" | "document";
+  onConfirm: () => void;
+}) {
+  return (
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Archive this {itemType}?</AlertDialogTitle>
+          <AlertDialogDescription>
+            “{item}” will be removed from member-facing lists. You can restore
+            it later from archived items.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Keep {itemType}</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>
+            <Archive /> Archive {itemType}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 
