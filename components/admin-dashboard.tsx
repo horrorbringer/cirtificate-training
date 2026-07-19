@@ -2493,6 +2493,12 @@ function AdminDocumentsWorkspace({
   const [access, setAccess] = useState("All access");
   const [type, setType] = useState("All files");
   const [selected, setSelected] = useState<string[]>([]);
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const [uploadFile, setUploadFile] = useState("");
+  const [documentTitle, setDocumentTitle] = useState("");
+  const [documentAccess, setDocumentAccess] = useState("Premium");
+  const [allowDownload, setAllowDownload] = useState(true);
+  const [publishDocument, setPublishDocument] = useState(true);
   const rows = adminDocuments.filter(
     (document) =>
       (access === "All access" || document.access === access) &&
@@ -2534,12 +2540,179 @@ function AdminDocumentsWorkspace({
           </Button>
           <Button
             className="bg-emerald-600 hover:bg-emerald-700"
-            onClick={() => notify("Document upload panel opened — UI demo")}
+            onClick={() => setUploadOpen(true)}
           >
             <FileUp /> Upload document
           </Button>
         </div>
       </div>
+      {uploadOpen && (
+        <Card className="overflow-hidden border-emerald-200 py-0 shadow-sm">
+          <CardHeader className="border-b bg-emerald-50/60 p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <Badge className="bg-emerald-100 text-emerald-700">
+                  New learning resource
+                </Badge>
+                <CardTitle className="mt-3 text-xl">Upload document</CardTitle>
+                <CardDescription className="mt-1">
+                  Add the file, learning context, and member access rules.
+                </CardDescription>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setUploadOpen(false)}
+                aria-label="Close document upload"
+              >
+                <X />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="grid gap-6 p-5 lg:grid-cols-[300px_1fr]">
+            <div>
+              <button
+                className={`flex min-h-64 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed p-6 text-center transition ${uploadFile ? "border-emerald-300 bg-emerald-50/50" : "border-slate-200 bg-slate-50 hover:border-emerald-300"}`}
+                onClick={() => {
+                  setUploadFile("leadership-workbook.pdf");
+                  if (!documentTitle) setDocumentTitle("Leadership Workbook");
+                }}
+              >
+                <span className="grid size-14 place-items-center rounded-xl bg-white text-emerald-700 shadow-sm">
+                  {uploadFile ? <CheckCircle2 /> : <FileUp />}
+                </span>
+                <strong className="mt-4 text-sm font-medium">
+                  {uploadFile || "Choose or drop a file"}
+                </strong>
+                <p className="mt-2 text-xs leading-5 text-slate-500">
+                  PDF, DOCX, XLSX or PPTX · Maximum 25 MB
+                </p>
+                <Badge variant="outline" className="mt-4 bg-white">
+                  {uploadFile ? "2.4 MB · Ready" : "Browse files"}
+                </Badge>
+              </button>
+              <div className="mt-3 flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-[10px] leading-4 text-amber-900/75">
+                <ShieldCheck className="mt-0.5 size-4 shrink-0 text-amber-700" />
+                Premium files should use protected, expiring download links in
+                production.
+              </div>
+            </div>
+            <div className="grid content-start gap-4 sm:grid-cols-2">
+              <label className="grid gap-2 text-xs font-medium sm:col-span-2">
+                Document title
+                <Input
+                  value={documentTitle}
+                  onChange={(event) => setDocumentTitle(event.target.value)}
+                  placeholder="e.g. Leadership reflection workbook"
+                />
+              </label>
+              <label className="grid gap-2 text-xs font-medium">
+                Category
+                <select className="h-9 rounded-lg border bg-white px-3 text-sm">
+                  <option>Guides</option>
+                  <option>Templates</option>
+                  <option>Worksheets</option>
+                  <option>Checklists</option>
+                  <option>Exercises</option>
+                </select>
+              </label>
+              <label className="grid gap-2 text-xs font-medium">
+                File language
+                <select className="h-9 rounded-lg border bg-white px-3 text-sm">
+                  <option>English</option>
+                  <option>French</option>
+                  <option>Spanish</option>
+                  <option>Khmer</option>
+                </select>
+              </label>
+              <label className="grid gap-2 text-xs font-medium sm:col-span-2">
+                Related course
+                <select className="h-9 rounded-lg border bg-white px-3 text-sm">
+                  <option>Effective Team Leadership</option>
+                  <option>Project Management Foundations</option>
+                  <option>Data Analysis with Excel</option>
+                  <option>Workplace Health & Safety</option>
+                </select>
+              </label>
+              <label className="grid gap-2 text-xs font-medium sm:col-span-2">
+                Description
+                <Textarea
+                  className="min-h-24"
+                  placeholder="Explain how learners should use this resource..."
+                />
+              </label>
+              <label className="grid gap-2 text-xs font-medium">
+                Access level
+                <select
+                  value={documentAccess}
+                  onChange={(event) => setDocumentAccess(event.target.value)}
+                  className="h-9 rounded-lg border bg-white px-3 text-sm"
+                >
+                  <option>Free</option>
+                  <option>Premium</option>
+                </select>
+              </label>
+              <label className="grid gap-2 text-xs font-medium">
+                Display order
+                <Input type="number" min="1" defaultValue="1" />
+              </label>
+              <div className="flex items-center justify-between rounded-lg border p-3 sm:col-span-2">
+                <div>
+                  <p className="text-xs font-medium">Allow downloads</p>
+                  <p className="mt-1 text-[10px] text-slate-500">
+                    Members with access may download this file.
+                  </p>
+                </div>
+                <Switch
+                  checked={allowDownload}
+                  onCheckedChange={setAllowDownload}
+                />
+              </div>
+              <div className="flex items-center justify-between rounded-lg border p-3 sm:col-span-2">
+                <div>
+                  <p className="text-xs font-medium">Publish immediately</p>
+                  <p className="mt-1 text-[10px] text-slate-500">
+                    Turn off to save this resource as a draft.
+                  </p>
+                </div>
+                <Switch
+                  checked={publishDocument}
+                  onCheckedChange={setPublishDocument}
+                />
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="justify-between bg-slate-50 p-4">
+            <Button variant="outline" onClick={() => setUploadOpen(false)}>
+              Cancel
+            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                onClick={() => notify("Document draft saved — UI demo")}
+              >
+                Save draft
+              </Button>
+              <Button
+                className="bg-emerald-600 hover:bg-emerald-700"
+                disabled={!uploadFile || !documentTitle.trim()}
+                onClick={() => {
+                  notify(
+                    publishDocument
+                      ? "Document published successfully — UI demo"
+                      : "Document saved as draft — UI demo",
+                  );
+                  setUploadOpen(false);
+                  setUploadFile("");
+                  setDocumentTitle("");
+                }}
+              >
+                <FileUp /> {publishDocument ? "Publish document" : "Save draft"}
+              </Button>
+            </div>
+          </CardFooter>
+        </Card>
+      )}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <DocumentSummary
           label="Documents"
